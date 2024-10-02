@@ -24,7 +24,7 @@ services:
     volumes:
       - .:/usr/app
       - /usr/app/node_modules
-    command: sh -c "npm install && npm run start:${NODE_ENV}"
+    command: sh -c "npm install && npx prisma migrate deploy && npm run start:${NODE_ENV}"
     depends_on:
       - postgres
     environment:
