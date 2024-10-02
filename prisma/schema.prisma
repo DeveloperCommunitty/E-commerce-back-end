@@ -8,10 +8,113 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Genero {
+  MASCULINO
+  FEMININO
+}
+
+enum CartStatus {
+  PAGO
+  PENDENTE
+  CANCELADO
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   name      String
   password  String
-  createdAt DateTime @default(now())
+  avatar    String
+  avatarId  String     @map("avatar_id")
+  role      Role       @default(USER)
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  Address   Address[]
+  Profiles  Profiles[]
+  Carts     Carts[]
+
+  @@map("users")
+}
+
+model Address {
+  id            String   @id @default(uuid())
+  userId        String?  @map("user_id")
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  street        String
+  neighbourhood String
+  city          String
+  zipCode       String   @map("zip_code")
+  publicPlace   String   @map("public_place")
+  streetNumber  String   @map("street_number")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("addresses")
+}
+
+model Profiles {
+  id        String   @id @default(uuid())
+  firstName String   @map("first_name")
+  lastName  String   @map("last_name")
+  cpf       String
+  birthDate String   @map("birth_date")
+  ddd       String
+  phone     String
+  genero    Genero
+  userId    String?  @map("user_id")
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
+}
+
+model Carts {
+  id        String      @id @default(uuid())
+  paymentId String      @map("payment_id")
+  sessionId String      @map("session_id")
+  total     Float
+  status    CartStatus  @default(PENDENTE)
+  userId    String?     @map("user_id")
+  user      User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  CartItems CartItems[]
+
+  @@map("carts")
+}
+
+model Products {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  stock       Int
+  sku         String
+  imagemUrl   String      @map("imagem_id")
+  publicId    String      @map("public_id")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  CartItems   CartItems[]
+
+  @@map("products")
+}
+
+model CartItems {
+  id        String    @id @default(uuid())
+  quantity  Int
+  subTotal  Float     @map("sub_total")
+  cartId    String    @map("cart_id")
+  cart      Carts?    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  products  Products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("cart_items")
 }
