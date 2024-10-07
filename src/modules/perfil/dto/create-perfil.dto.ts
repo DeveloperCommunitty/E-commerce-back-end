@@ -1,6 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Genero } from "@prisma/client";
 import { IsNotEmpty } from "class-validator";
+
+export enum Genero{
+  MASCULINO = "MASCULINO", 
+  FEMININO = "FEMININO"
+}
 
 export class CreateProfileDto {
     @ApiProperty({

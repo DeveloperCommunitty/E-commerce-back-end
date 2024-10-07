@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateProfileDto } from './create-perfil.dto';
-import { $Enums } from '@prisma/client';
+import { Genero } from './create-perfil.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateProfileDto extends PartialType(CreateProfileDto) {
@@ -37,7 +37,7 @@ export class UpdateProfileDto extends PartialType(CreateProfileDto) {
     @ApiProperty({
         example: 'MASCULINO'
     })
-    genero?: $Enums.Genero;
+    genero?: Genero;
 
     @ApiProperty({
         example: 'Fulano'
