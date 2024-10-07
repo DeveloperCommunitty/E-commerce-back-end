@@ -7,12 +7,15 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { ConfigService } from '@nestjs/config';
 import { IS_PUBLIC_KEY } from './skipAuth/SkipAuth'
+
   
   @Injectable()
   export class AuthGuard implements CanActivate {
-    constructor(private jwtService: JwtService, private reflector: Reflector, private configService: ConfigService,) {}
+    constructor(
+        private jwtService: JwtService, 
+        private reflector: Reflector, 
+      ) {}
   
     async canActivate(context: ExecutionContext): Promise<boolean> {
       const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -28,16 +31,16 @@ import { IS_PUBLIC_KEY } from './skipAuth/SkipAuth'
       const token = this.extractTokenFromHeader(request);
 
       if (!token) {
-        throw new UnauthorizedException('Acesso Restrito!');
+        throw new UnauthorizedException({message: 'Acesso Restrito!' , error: 'Token inexistente!'});
       }
       try {
-        const secret = this.configService.get<string>('TOKEN_ENV');
+        const secret = process.env.JWT_SECRET;
         const payload = await this.jwtService.verifyAsync(token, {
           secret: secret,
         });
         request['user'] = payload;
       } catch {
-        throw new UnauthorizedException('Token Inválido!');
+        throw new UnauthorizedException({message: 'Token Inválido!', error: 'Sem autorização!'});
       }
       return true;
     }

@@ -1,18 +1,18 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import bcrypt from 'bcryptjs';
-// import { UsersService } from 'src/users/users.service';
+import * as bcrypt from 'bcrypt';
+import { UsuarioService } from 'src/modules/usuario/usuario.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    // private userService: UsersService,
+    private userService: UsuarioService,
     private jwtService: JwtService,
   ) {}
 
   async signIn(email: string, password: string): Promise<{ access_token: string }> {
 
-    const user = await this.userService.findOne(email, password);
+    const user = await this.userService.findOne(email);
 
     if (!user) {
         throw new UnauthorizedException();
@@ -21,7 +21,7 @@ export class AuthService {
     
     const passwordCorrect = await bcrypt.compare(password, user.password);
 
-    if (!passwordCorrect) throw new BadRequestException('Falha de autenticação.')
+    if (!passwordCorrect) throw new BadRequestException({message: 'Falha de autenticação.', error: "Credenciais inválidas",})
 
     return {
         access_token: await this.jwtService.signAsync(payload),

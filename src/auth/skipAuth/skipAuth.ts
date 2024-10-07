@@ -1,8 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
-export const IS_PUBLIC_KEY = async (configService: ConfigService) => ({
-    IS_PUBLIC_KEY: configService.get<string>('IS_PUBLIC_KEY'), 
+export const IS_PUBLIC_KEY = async () => ({
+    IS_PUBLIC_KEY: process.env.JWT_SECRET, 
 });
 
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);

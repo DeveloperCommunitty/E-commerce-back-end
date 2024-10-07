@@ -1,25 +1,25 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-// import { UsersModule } from './users.module';
+import { UsuarioModule } from '../modules/usuario/usuario.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { UsuarioService } from 'src/modules/usuario/usuario.service';
+import { PrismaService } from 'src/database/PrismaService';
+import { CaslModule } from 'src/casl/casl.module';
 
 @Module({
   imports: [
-    // UsersModule,
-    ConfigModule, 
+    UsuarioModule,
+    CaslModule,
     JwtModule.registerAsync({
       global: true,
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('TOKEN_ENV'), 
-        signOptions: { expiresIn: '43200s' },
+      useFactory: async () => ({
+        secret: process.env.JWT_SECRET, 
+        signOptions: { expiresIn: '43200s' }, 
       }),
-      inject: [ConfigService], 
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, PrismaService, UsuarioService],
 })
 export class AuthModule {}

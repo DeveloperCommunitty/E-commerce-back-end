@@ -1,29 +1,26 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './AuthDto/AuthDto';
-import { AuthGuard } from './auth.guard';
-import { Public } from './skipAuth/skipAuth';
-import { PoliciesGuard } from 'src/casl/guards/policies.guard';
+import { Public } from 'src/auth/skipAuth/SkipAuth';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Auth') // Nome da tag usada no Swagger para agrupar os endpoints
-@Controller('auth')
-@UseGuards(PoliciesGuard)
+@ApiTags('Login') 
+@Controller('login')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Public()
   @ApiOperation({ summary: 'Login do usuário e retorno do token de acesso.' })
   @HttpCode(HttpStatus.OK)
-  @Post('login')
+  @Post()
+  @Public()
   async signIn(@Body() auth: AuthDto) {
     return await this.authService.signIn(auth.email, auth.password);
   }
 
-  @UseGuards(AuthGuard)
-  @Get('profile')
+
+  @Get('token')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Obtém o perfil do usuário' })
+  @ApiOperation({ summary: 'Obtém os dados presentes no token do usuário.' })
   getProfile(@Request() req) {
     return req.user;
   }
