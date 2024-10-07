@@ -14,6 +14,7 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .addTag('Cadastrar')
+    .addTag('Perfil')
     .build();
   const document = SwaggerModule.createDocument(app, config);
 

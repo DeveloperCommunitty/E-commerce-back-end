@@ -5,11 +5,13 @@ import { AuthGuard } from './auth/auth.guard';
 import { UsuarioModule } from './modules/usuario/usuario.module';
 import { CaslModule } from './casl/casl.module';
 import { CadastroModule } from './modules/cadastro/cadastro.module';
+import { PerfilModule } from './modules/perfil/perfil.module';
 
 @Module({
   imports: [
     UsuarioModule,
     CadastroModule,
+    PerfilModule,
     AuthModule,
     CaslModule
   ],
