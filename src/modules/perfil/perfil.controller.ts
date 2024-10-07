@@ -33,7 +33,7 @@ export class ProfileController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, body: UpdateProfileDto) {
+  update(@Param('id') id: string,@Body() body: UpdateProfileDto) {
     return this.profile.update(id, body);
   }
 
