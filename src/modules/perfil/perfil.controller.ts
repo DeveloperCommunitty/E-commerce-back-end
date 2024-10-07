@@ -7,15 +7,15 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { CreateProfileDto } from './dto/create-perfil.dto';
-import { ProfileService } from './perfil.service';
-import { UpdateProfileDto } from './dto/update-perfil.dto';
+import { CreateProfileDto } from './dto/perfil.create.dto';
+import { PerfilService } from './perfil.service';
+import { UpdateProfileDto } from './dto/perfil.update.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Perfil')
 @Controller('perfil')
-export class ProfileController {
-  constructor(private profile: ProfileService) {}
+export class PerfilController {
+  constructor(private profile: PerfilService) {}
 
   @Post()
   create(@Body() body: CreateProfileDto) {

@@ -1,10 +1,10 @@
 import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateProfileDto } from './dto/create-perfil.dto';
-import { UpdateProfileDto } from './dto/update-perfil.dto';
+import { CreateProfileDto } from './dto/perfil.create.dto';
+import { UpdateProfileDto } from './dto/perfil.update.dto';
 import { PrismaService } from 'src/database/PrismaService';
 
 @Injectable()
-export class ProfileService {
+export class PerfilService {
   constructor(private prisma: PrismaService) {}
 
   async create(@Body() body: CreateProfileDto) {

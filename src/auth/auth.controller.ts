@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthDto } from './AuthDto/AuthDto';
-import { Public } from 'src/auth/skipAuth/SkipAuth';
+import { AuthDto } from './authDto/authDto';
+import { Public } from 'src/auth/skipAuth/skipAuth';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Login') 

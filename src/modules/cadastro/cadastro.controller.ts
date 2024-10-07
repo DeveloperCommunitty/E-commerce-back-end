@@ -2,7 +2,7 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { CadastroService } from './cadastro.service';
 import { CadastroDTO } from './dto/cadastro.create.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { Public } from 'src/auth/skipAuth/SkipAuth';
+import { Public } from 'src/auth/skipAuth/skipAuth';
 
 @ApiTags('Cadastrar')
 @Controller('cadastro')
