@@ -6,6 +6,9 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
 import { CaslModule } from './casl/casl.module';
 import { CadastroModule } from './modules/cadastro/cadastro.module';
 import { PerfilModule } from './modules/perfil/perfil.module';
+import { CloudinaryController } from './cloudinary/cloudinary.controller';
+import { CloudinaryService } from './cloudinary/cloudinary.service';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -13,14 +16,15 @@ import { PerfilModule } from './modules/perfil/perfil.module';
     CadastroModule,
     PerfilModule,
     AuthModule,
-    CaslModule
+    CaslModule,
+    CloudinaryModule
   ],
-  controllers: [],
   providers: [
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
+    CloudinaryService,
   ],
 })
 export class AppModule {}
