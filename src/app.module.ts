@@ -6,7 +6,6 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
 import { CaslModule } from './casl/casl.module';
 import { CadastroModule } from './modules/cadastro/cadastro.module';
 import { PerfilModule } from './modules/perfil/perfil.module';
-import { CloudinaryController } from './cloudinary/cloudinary.controller';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 

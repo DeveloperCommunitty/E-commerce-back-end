@@ -11,11 +11,11 @@ export const CloudinaryStorageConfig = new CloudinaryStorage({
     } else if (file.mimetype === 'image/png') {
       format = 'png';
     } else {
-      throw new Error('Invalid file type');
+      throw new Error('Tipo de arquivo inválido');
     }
 
     return {
-      folder: 'backups',
+      folder: 'produtos',
       format: format,
       public_id: file.originalname, 
       transformation: [{ width: 500, height: 500, crop: 'limit' }, { quality: 'auto:low' }]
