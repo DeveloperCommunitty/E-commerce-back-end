@@ -5,7 +5,7 @@ import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 
 @Injectable()
 export class UsuarioService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(@Body() body: CreateUsuarioDto) {
     const { email, name, password, avatar, avatarId, role } = body;
@@ -34,6 +34,21 @@ export class UsuarioService {
         avatar: true,
         avatarId: true,
         role: true,
+      }
+    });
+
+    return user;
+  }
+
+  async findOneForEmail(email: string){
+    const user = await this.prisma.user.findUnique({
+      where: { email }, 
+      select:{
+        id: true,
+        email: true,
+        name: true,
+        password: true,
+        role: true
       }
     });
 
