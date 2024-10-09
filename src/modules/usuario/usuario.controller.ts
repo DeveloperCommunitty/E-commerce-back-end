@@ -10,11 +10,12 @@ import {
 import { CreateUsuarioDto } from './dto/createUsuario.dto';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 import { UsuarioService } from './usuario.service';
+import { ApiTags } from '@nestjs/swagger';
 
-
+@ApiTags('Usuarios')
 @Controller('usuario')
 export class UsuarioController {
-  constructor(private usuario: UsuarioService) { }
+  constructor(private usuario: UsuarioService) {}
 
   @Post()
   create(@Body() body: CreateUsuarioDto) {
@@ -41,4 +42,3 @@ export class UsuarioController {
     return this.usuario.remove(id);
   }
 }
-

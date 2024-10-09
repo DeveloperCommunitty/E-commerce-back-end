@@ -4,10 +4,10 @@ import { Public } from 'src/auth/skipAuth/skipAuth';
 import { CadastroService } from './cadastro.service';
 import { CadastroDTO } from './dto/cadastro.create.dto';
 
-@ApiTags('Cadastro')
+@ApiTags('Cadastrar')
 @Controller('cadastro')
 export class CadastroController {
-  constructor(private readonly cadastroService: CadastroService) { }
+  constructor(private readonly cadastroService: CadastroService) {}
 
   @Post()
   @Public()

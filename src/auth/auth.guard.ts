@@ -9,13 +9,12 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from './skipAuth/skipAuth';
 
-
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
-  ) { }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -31,7 +30,10 @@ export class AuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException({ message: 'Acesso Restrito!', error: 'Token inexistente!' });
+      throw new UnauthorizedException({
+        message: 'Acesso Restrito!',
+        error: 'Token inexistente!',
+      });
     }
     try {
       const secret = process.env.JWT_SECRET;
@@ -40,7 +42,10 @@ export class AuthGuard implements CanActivate {
       });
       request['user'] = payload;
     } catch {
-      throw new UnauthorizedException({ message: 'Token Inválido!', error: 'Sem autorização!' });
+      throw new UnauthorizedException({
+        message: 'Token Inválido!',
+        error: 'Sem autorização!',
+      });
     }
     return true;
   }
@@ -50,4 +55,3 @@ export class AuthGuard implements CanActivate {
     return type === 'Bearer' ? token : undefined;
   }
 }
-
