@@ -1,7 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Role } from "@prisma/client";
 import { IsNotEmpty } from "class-validator";
 
+
+export enum Role {
+    USER = 'USER',
+    ADMIN = 'ADMIN',
+}
 export class CreateUsuarioDto {
     @ApiProperty({
         description: 'Nome do usuário',
