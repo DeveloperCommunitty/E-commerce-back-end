@@ -6,6 +6,7 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
 import { CaslModule } from './casl/casl.module';
 import { CadastroModule } from './modules/cadastro/cadastro.module';
 import { PerfilModule } from './modules/perfil/perfil.module';
+import { ProdutosModule } from './modules/produtos/produtos.module';
 
 @Module({
   imports: [
@@ -13,9 +14,9 @@ import { PerfilModule } from './modules/perfil/perfil.module';
     CadastroModule,
     PerfilModule,
     AuthModule,
-    CaslModule
+    CaslModule,
+    ProdutosModule
   ],
-  controllers: [],
   providers: [
     {
       provide: APP_GUARD,

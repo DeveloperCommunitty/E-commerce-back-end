@@ -9,7 +9,7 @@ export class UsuarioService {
     return 'Hello World na parte de Usuários';
   }
 
-  async findOne(email: string): Promise<User> {
+  async findOne(email: string){
     const user = await this.prisma.user.findUnique({
       where: { email }, 
       select:{
@@ -17,6 +17,7 @@ export class UsuarioService {
         email: true,
         name: true,
         password: true,
+        role: true
       }
     });
 

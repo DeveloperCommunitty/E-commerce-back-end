@@ -91,11 +91,11 @@ model Carts {
 
 model Products {
   id          String      @id @default(uuid())
-  name        String
+  name        String @unique
   description String
   price       Float
   stock       Int
-  sku         String
+  sku         String @unique
   imagemUrl   String      @map("imagem_id")
   publicId    String      @map("public_id")
   createdAt   DateTime    @default(now()) @map("created_at")
