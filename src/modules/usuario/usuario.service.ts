@@ -1,27 +1,11 @@
-import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/PrismaService';
-import { CreateUsuarioDto } from './dto/createUsuario.dto';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 
 @Injectable()
 export class UsuarioService {
   constructor(private readonly prisma: PrismaService) { }
 
-  async create(@Body() body: CreateUsuarioDto) {
-    const { email, name, password, avatar, avatarId, role } = body;
-    const user = await this.prisma.user.create({
-      data: {
-        email,
-        name,
-        password,
-        avatar,
-        avatarId,
-        role,
-      },
-    });
-
-    return user;
-  }
 
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
@@ -36,6 +20,8 @@ export class UsuarioService {
         role: true,
       }
     });
+    if (!user)
+      throw new HttpException(`Usuário não encontrado`, HttpStatus.NOT_FOUND);
 
     return user;
   }
@@ -51,12 +37,14 @@ export class UsuarioService {
         role: true
       }
     });
+    if (!user)
+      throw new HttpException(`Não foi possível localizar o Usuário`, HttpStatus.NOT_FOUND);
 
     return user;
   }
 
   async findAll() {
-    const users = await this.prisma.user.findMany({
+    const allUsers = await this.prisma.user.findMany({
       select: {
         id: true,
         email: true,
@@ -67,11 +55,20 @@ export class UsuarioService {
         role: true,
       }
     });
+    if (!allUsers)
+      throw new HttpException(`Nenhum usuário encontrado`, HttpStatus.EXPECTATION_FAILED);
 
-    return users;
+    return allUsers;
   }
 
   async update(id: string, body: UpdateUsuarioDto) {
+    const userCheck = await this.prisma.user.findUnique({
+      where: { id },
+    });
+    if (!userCheck)
+      throw new HttpException(`Usuário inexistente`, HttpStatus.NOT_FOUND);
+
+
     const { email, name, password, avatar, avatarId, role } = body;
     const user = await this.prisma.user.update({
       where: { id },
@@ -84,6 +81,8 @@ export class UsuarioService {
         role,
       }
     });
+    if (!user)
+      throw new HttpException(`Erro ao atualizar usuário`, HttpStatus.EXPECTATION_FAILED);
 
     return user;
   }

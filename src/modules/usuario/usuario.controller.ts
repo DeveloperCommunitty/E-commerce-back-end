@@ -4,11 +4,9 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
-  Post,
+  Patch
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateUsuarioDto } from './dto/createUsuario.dto';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 import { UsuarioService } from './usuario.service';
 
@@ -16,11 +14,6 @@ import { UsuarioService } from './usuario.service';
 @Controller('usuario')
 export class UsuarioController {
   constructor(private usuario: UsuarioService) { }
-
-  @Post()
-  create(@Body() body: CreateUsuarioDto) {
-    return this.usuario.create(body);
-  }
 
   @Get('usuarios')
   findAll() {
@@ -30,6 +23,10 @@ export class UsuarioController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usuario.findOne(id);
+  }
+  @Get('email/:email')
+  findOneForEmail(@Param('email') email: string) {
+    return this.usuario.findOneForEmail(email);
   }
 
   @Patch(':id')
