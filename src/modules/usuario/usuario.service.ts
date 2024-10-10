@@ -1,11 +1,11 @@
-import { Body, Injectable } from '@nestjs/common';
+import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/PrismaService';
 import { CreateUsuarioDto } from './dto/createUsuario.dto';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 
 @Injectable()
 export class UsuarioService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(@Body() body: CreateUsuarioDto) {
     const { email, name, password, avatar, avatarId, role } = body;
@@ -40,10 +40,10 @@ export class UsuarioService {
     return user;
   }
 
-  async findOneForEmail(email: string){
+  async findOneForEmail(email: string) {
     const user = await this.prisma.user.findUnique({
-      where: { email }, 
-      select:{
+      where: { email },
+      select: {
         id: true,
         email: true,
         name: true,
@@ -89,10 +89,20 @@ export class UsuarioService {
   }
 
   async remove(id: string) {
-    const user = await this.prisma.user.delete({
+    const userCheck = await this.prisma.user.findUnique({
       where: { id },
     });
 
-    return user;
+    if (!userCheck) {
+      throw new HttpException(`Usuário inexistente`, HttpStatus.NOT_FOUND);
+    }
+
+    await this.prisma.user.delete({ where: { id } });
+
+    return {
+      message: `Usuário deletado com sucesso`,
+      status: HttpStatus.NO_CONTENT,
+    };
   }
+
 }

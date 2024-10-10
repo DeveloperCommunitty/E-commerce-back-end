@@ -7,15 +7,15 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateUsuarioDto } from './dto/createUsuario.dto';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 import { UsuarioService } from './usuario.service';
-import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Usuarios')
 @Controller('usuario')
 export class UsuarioController {
-  constructor(private usuario: UsuarioService) {}
+  constructor(private usuario: UsuarioService) { }
 
   @Post()
   create(@Body() body: CreateUsuarioDto) {
@@ -33,7 +33,7 @@ export class UsuarioController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, body: UpdateUsuarioDto) {
+  update(@Param('id') id: string, @Body() body: UpdateUsuarioDto) {
     return this.usuario.update(id, body);
   }
 
