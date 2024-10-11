@@ -5,7 +5,7 @@ import { UpdateAddressDto } from './dto/endereco.update.dto';
 
 @Injectable()
 export class EnderecoService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(body: CreateAddressDto) {
     const {

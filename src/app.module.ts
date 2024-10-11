@@ -7,8 +7,6 @@ import { CaslModule } from './casl/casl.module';
 import { CadastroModule } from './modules/cadastro/cadastro.module';
 import { PerfilModule } from './modules/perfil/perfil.module';
 import { EnderecoModule } from './modules/endereco/endereco.module';
-import { EnderecoService } from './modules/endereco/endereco.service';
-import { EnderecoController } from './modules/endereco/endereco.controller';
 
 @Module({
   imports: [
@@ -19,13 +17,11 @@ import { EnderecoController } from './modules/endereco/endereco.controller';
     CaslModule,
     EnderecoModule,
   ],
-  controllers: [EnderecoController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
-    EnderecoService,
   ],
 })
 export class AppModule {}

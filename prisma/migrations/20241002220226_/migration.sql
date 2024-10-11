@@ -14,7 +14,7 @@ CREATE TABLE "users" (
     "name" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "avatar" TEXT NOT NULL,
-    "avatar_id" TEXT NOT NULL,
+    "avatarId" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'USER',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
