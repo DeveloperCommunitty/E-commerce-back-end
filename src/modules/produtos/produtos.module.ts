@@ -3,9 +3,10 @@ import { ProdutosService } from './produtos.service';
 import { ProdutosController } from './produtos.controller';
 import { PrismaService } from 'src/database/PrismaService';
 import { CaslModule } from 'src/casl/casl.module';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
-    imports: [CaslModule],
+    imports: [CaslModule, CloudinaryModule],
     controllers: [ProdutosController],
     providers: [ProdutosService, PrismaService]
 })

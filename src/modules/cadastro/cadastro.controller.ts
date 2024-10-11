@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { CadastroService } from './cadastro.service';
 import { CadastroDTO } from './dto/cadastro.create.dto';
 import { ApiTags } from '@nestjs/swagger';

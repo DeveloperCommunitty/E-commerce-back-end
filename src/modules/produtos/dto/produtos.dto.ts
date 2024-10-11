@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 import { IsNotEmpty, Length } from "class-validator";
 
 export class ProductsDto {
@@ -12,17 +13,16 @@ export class ProductsDto {
     description: string;
     @ApiProperty({ example: '120', description: 'Valor do produto' })
     @IsNotEmpty({message: 'Digite um preço!'})
+    @Type(() => Number) 
     price: number;
     @ApiProperty({ example: '20', description: 'Quantidade no estoque' })
     @IsNotEmpty({message: 'Digite a quantidade no estoque!'})
+    @Type(() => Number) 
     stock: number;
     @ApiProperty()
     @IsNotEmpty()
+    @ApiProperty({ example: 'SOK-300', description: 'Código de indetificaçao único' })
     sku: string;
-    @ApiProperty({ example: 'https:imagem-capinha-celular-exemplo.png', description: 'Imagem do produto' })
-    @IsNotEmpty()
+    @ApiProperty({ example: 'capinha.png', description: 'Imagem do produto' })
     imagemUrl: string;
-    @ApiProperty()
-    @IsNotEmpty()
-    publicId: string;
 }

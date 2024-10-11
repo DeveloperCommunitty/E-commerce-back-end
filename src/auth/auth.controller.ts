@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request } from '@nes
 import { AuthService } from './auth.service';
 import { AuthDto } from './authDto/authDto';
 import { Public } from 'src/auth/skipAuth/skipAuth';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Login') 
 @Controller('login')
@@ -16,15 +16,6 @@ export class AuthController {
   async signIn(@Body() auth: AuthDto) {
     return await this.authService.signIn(auth.email, auth.password);
   }
-
-
-  @Get('token')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Obtém os dados presentes no token do usuário.' })
-  getProfile(@Request() req) {
-    return req.user;
-  }
-
 
 }
 
