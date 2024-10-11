@@ -1,8 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { CadastroService } from './cadastro.service';
-import { CadastroDTO } from './dto/cadastro.create.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/auth/skipAuth/skipAuth';
+import { CadastroService } from './cadastro.service';
+import { CadastroDTO } from './dto/cadastro.create.dto';
 
 @ApiTags('Cadastrar')
 @Controller('cadastro')
