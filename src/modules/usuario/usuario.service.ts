@@ -1,6 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
+import { randomInt } from 'node:crypto';
 import { PrismaService } from '../../database/PrismaService';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
+
 
 @Injectable()
 export class UsuarioService {
@@ -68,21 +71,35 @@ export class UsuarioService {
     if (!userCheck)
       throw new HttpException(`Usuário inexistente`, HttpStatus.NOT_FOUND);
 
+    const emailCheck = await this.prisma.user.findFirst({
+      where: {
+        email: body.email,
+      },
+    });
 
-    const { email, name, password, avatar, avatarId, role } = body;
+    if (emailCheck) {
+      throw new ForbiddenException('Email já está sendo usado');
+    }
+    const ramdomSalt = randomInt(10, 16);
+    const hash = await bcrypt.hash(body.password, ramdomSalt);
+
+
+    const { email, name, avatar, avatarId, role } = body;
     const user = await this.prisma.user.update({
       where: { id },
       data: {
         email,
         name,
-        password,
+        password: hash,
         avatar,
         avatarId,
         role,
       }
     });
-    if (!user)
-      throw new HttpException(`Erro ao atualizar usuário`, HttpStatus.EXPECTATION_FAILED);
+    if (user) {
+      throw new HttpException(`Usuário atualizado com sucesso`, HttpStatus.OK);
+    }
+
 
     return user;
   }
