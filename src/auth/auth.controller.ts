@@ -16,8 +16,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @ApiOperation({ summary: 'Login do usuário e retorno do token de acesso.' })
-  @HttpCode(HttpStatus.OK)
   @ApiResponse({ status: 401, description: 'Token Inválido!' })
+  @HttpCode(HttpStatus.OK)
   @Post()
   @Public()
   async signIn(@Body() auth: AuthDto) {
