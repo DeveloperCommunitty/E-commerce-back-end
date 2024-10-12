@@ -17,6 +17,9 @@ export const CloudinaryStorageConfig = new CloudinaryStorage({
     return {
       folder: 'produtos',
       format: format,
+      api: {
+        bodyParser: false
+      },
       public_id: file.originalname, 
       transformation: [{ width: 500, height: 500, crop: 'limit' }, { quality: 'auto:low' }]
     };

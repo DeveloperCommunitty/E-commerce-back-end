@@ -1,13 +1,11 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
-  Request,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/auth/skipAuth/skipAuth';
 import { AuthService } from './auth.service';
 import { AuthDto } from './authDto/authDto';
@@ -18,6 +16,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @ApiOperation({ summary: 'Login do usuário e retorno do token de acesso.' })
+  @ApiResponse({ status: 401, description: 'Token Inválido!' })
   @HttpCode(HttpStatus.OK)
   @Post()
   @Public()
@@ -25,10 +24,4 @@ export class AuthController {
     return await this.authService.signIn(auth.email, auth.password);
   }
 
-  @Get('token')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Obtém os dados presentes no token do usuário.' })
-  getProfile(@Request() req) {
-    return req.user;
-  }
 }

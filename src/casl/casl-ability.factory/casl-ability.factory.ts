@@ -12,7 +12,7 @@ export class CaslAbilityFactory {
     const { can, build } = new AbilityBuilder<Ability<[Action, Subjects]>
     >(Ability as AbilityClass<AppAbility>);
 
-    if (user?.Role) {
+    if (user?.role === 'ADMIN') {
       can(Action.Admin, 'all');
     } else {
       can(Action.User, 'all'); 
