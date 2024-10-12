@@ -72,7 +72,7 @@ export class UsuarioService {
     if (!userCheck)
       throw new HttpException(`Usuário inexistente`, HttpStatus.NOT_FOUND);
 
-    const { email, name, password } = body;
+    const { email, name, password, role } = body;
     let avatar_id = null;
     let avatar_url = null;
 
@@ -109,6 +109,7 @@ export class UsuarioService {
           password: hash,
           avatar: avatar_url,
           avatarId: avatar_id,
+          role,
         }
       });
       
@@ -116,6 +117,8 @@ export class UsuarioService {
         throw new HttpException(`Usuário atualizado com sucesso`, HttpStatus.OK);
       }
   
+  
+      console.log(user)
       return user;
     }
   }
