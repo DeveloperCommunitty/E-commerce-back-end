@@ -72,20 +72,10 @@ export class UsuarioService {
     if (!userCheck)
       throw new HttpException(`Usuário inexistente`, HttpStatus.NOT_FOUND);
 
-    const { email, name, password, role } = body;
+    const { name, password } = body;
     let avatar_id = null;
     let avatar_url = null;
 
-    console.log(name)
-    const emailCheck = await this.prisma.user.findFirst({
-      where: {
-        email,
-      },
-    });
-
-    if (emailCheck) {
-      throw new ForbiddenException('Email já está sendo usado');
-    }
     const ramdomSalt = randomInt(10, 16);
     const hash = await bcrypt.hash(password, ramdomSalt);
 
@@ -104,21 +94,17 @@ export class UsuarioService {
       const user = await this.prisma.user.update({
         where: { id },
         data: {
-          email,
           name,
           password: hash,
           avatar: avatar_url,
           avatarId: avatar_id,
-          role,
         }
       });
       
       if (user) {
         throw new HttpException(`Usuário atualizado com sucesso`, HttpStatus.OK);
       }
-  
-  
-      console.log(user)
+
       return user;
     }
   }
