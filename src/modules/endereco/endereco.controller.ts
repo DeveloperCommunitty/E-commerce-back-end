@@ -22,7 +22,7 @@ export class EnderecoController {
     return this.enderecoService.create(body);
   }
 
-  @Get(':userId')
+  @Get('enderecos/:userid')
   findAll(@Param('userId') userId: string) {
     return this.enderecoService.findAll(userId);
   }
