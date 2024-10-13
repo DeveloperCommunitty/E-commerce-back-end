@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
 export enum Role {
   USER = 'USER',
@@ -10,6 +11,8 @@ export class CadastroDTO {
     description: 'O e-mail do usuário, que será utilizado para autenticação',
     example: 'cliente@example.com',
   })
+  @IsNotEmpty({ message: 'O e-mail não pode estar vazio.' })
+  @IsEmail({}, { message: 'Por favor, insira um e-mail válido.' })
   email: string;
 
   @ApiProperty({
@@ -22,6 +25,8 @@ export class CadastroDTO {
     description: 'A senha do usuário. Deve ser forte e segura.',
     example: 'SenhaForte123!',
   })
+  @IsNotEmpty({ message: 'A senha não pode estar vazia.' })
+  @MinLength(8, { message: 'A senha deve ter pelo menos 8 caracteres.' })
   password: string;
 
   @ApiProperty({
