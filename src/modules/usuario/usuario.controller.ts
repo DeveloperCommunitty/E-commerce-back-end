@@ -4,11 +4,16 @@ import {
   Delete,
   Get,
   Param,
-  Patch
+  Patch,
+  UploadedFile,
+  UploadedFiles,
+  UseInterceptors
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 import { UsuarioService } from './usuario.service';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { CloudinaryStorageConfig } from 'src/cloudinary/Multer.config';
 
 @ApiTags('Usuarios')
 @Controller('usuario')
@@ -30,8 +35,20 @@ export class UsuarioController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() body: UpdateUsuarioDto) {
-    return this.usuario.update(id, body);
+  @UseInterceptors(
+    FileInterceptor('file', { 
+      storage: CloudinaryStorageConfig,
+      fileFilter: (req, file, cb) => {
+        const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+        if (!allowedTypes.includes(file.mimetype)) {
+          return cb(new Error('Tipo de arquivo inválido'), false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  update(@Param('id') id: string, @Body() body: UpdateUsuarioDto, @UploadedFile() file: Express.Multer.File) {
+    return this.usuario.update(id, body, file);
   }
 
   @Delete(':id')

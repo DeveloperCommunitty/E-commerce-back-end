@@ -7,12 +7,16 @@ config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('API E-Commerce NestJS')
     .setDescription(
-      'API de E-Commerce oferece recursos para criar, gerenciar e integrar plataformas de comércio eletrônico. Ela permite operações de produtos, pedidos, clientes e carrinhos de compras, com autenticação baseada em tokens para segurança. Use esta API para listar, criar, atualizar e excluir produtos, processar pedidos, gerenciar clientes e trabalhar com carrinhos de compras.\n\n`Desenvolvedores`\n- [Wesley Santos](https://www.instagram.com/_wesley.dev/) \n\n- [Jhoão Pedro](https://www.instagram.com/jhoao_ns/) \n\n- [Pedro Gabriel](https://www.instagram.com/pedin_nm/) \n\n- [Naelly Silva]() \n\n- [Leandro Barbosa](https://www.linkedin.com/in/leandrobarbosav/)',
+      'API de E-Commerce oferece recursos para criar, gerenciar e integrar plataformas de comércio eletrônico. Ela permite operações de produtos, pedidos, clientes e carrinhos de compras, com autenticação baseada em tokens para segurança. Use esta API para listar, criar, atualizar e excluir produtos, processar pedidos, gerenciar clientes e trabalhar com carrinhos de compras.\n\n`Desenvolvedores`\n- [Wesley Santos](https://www.linkedin.com/in/wesley-santos-developer/) \n\n- [Jhoão Pedro](https://www.linkedin.com/in/jhoaosantos/) \n\n- [Pedro Gabriel](https://www.linkedin.com/in/pedro-gabriel-488a05284/) \n\n- [Naelly Silva](https://www.linkedin.com/in/naelly-silva-34613a20b/) \n\n- [Leandro Barbosa](https://www.linkedin.com/in/leandrobarbosav/)',
     )
     .setVersion('1.0')
     .addBearerAuth(
