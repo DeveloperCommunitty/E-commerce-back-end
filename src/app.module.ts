@@ -6,6 +6,7 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
 import { CaslModule } from './casl/casl.module';
 import { CadastroModule } from './modules/cadastro/cadastro.module';
 import { PerfilModule } from './modules/perfil/perfil.module';
+import { EnderecoModule } from './modules/endereco/endereco.module';
 
 @Module({
   imports: [
@@ -13,9 +14,9 @@ import { PerfilModule } from './modules/perfil/perfil.module';
     CadastroModule,
     PerfilModule,
     AuthModule,
-    CaslModule
+    CaslModule,
+    EnderecoModule,
   ],
-  controllers: [],
   providers: [
     {
       provide: APP_GUARD,

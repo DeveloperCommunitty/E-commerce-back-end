@@ -22,4 +22,5 @@ import { CaslModule } from 'src/casl/casl.module';
   controllers: [AuthController],
   providers: [AuthService, PrismaService, UsuarioService],
 })
+
 export class AuthModule {}

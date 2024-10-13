@@ -1,14 +1,17 @@
-import { ForbiddenException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { randomInt } from 'node:crypto';
 import { PrismaService } from '../../database/PrismaService';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 
-
 @Injectable()
 export class UsuarioService {
-  constructor(private readonly prisma: PrismaService) { }
-
+  constructor(private readonly prisma: PrismaService) {}
 
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
@@ -17,11 +20,34 @@ export class UsuarioService {
         id: true,
         email: true,
         name: true,
-        password: true,
         avatar: true,
-        avatarId: true,
         role: true,
-      }
+        Profiles: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            cpf: true,
+            genero: true,
+            birthDate: true,
+            ddd: true,
+            phone: true,
+            userId: true,
+          },
+        },
+        Address: {
+          select: {
+            id: true,
+            city: true,
+            street: true,
+            neighbourhood: true,
+            publicPlace: true,
+            streetNumber: true,
+            zipCode: true,
+            userId: true,
+          },
+        },
+      },
     });
     if (!user)
       throw new HttpException(`Usuário não encontrado`, HttpStatus.NOT_FOUND);
@@ -37,11 +63,14 @@ export class UsuarioService {
         email: true,
         name: true,
         password: true,
-        role: true
-      }
+        role: true,
+      },
     });
     if (!user)
-      throw new HttpException(`Não foi possível localizar o Usuário`, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        `Não foi possível localizar o Usuário`,
+        HttpStatus.NOT_FOUND,
+      );
 
     return user;
   }
@@ -52,14 +81,15 @@ export class UsuarioService {
         id: true,
         email: true,
         name: true,
-        password: true,
         avatar: true,
-        avatarId: true,
         role: true,
-      }
+      },
     });
     if (!allUsers)
-      throw new HttpException(`Nenhum usuário encontrado`, HttpStatus.EXPECTATION_FAILED);
+      throw new HttpException(
+        `Nenhum usuário encontrado`,
+        HttpStatus.EXPECTATION_FAILED,
+      );
 
     return allUsers;
   }
@@ -83,7 +113,6 @@ export class UsuarioService {
     const ramdomSalt = randomInt(10, 16);
     const hash = await bcrypt.hash(body.password, ramdomSalt);
 
-
     const { email, name, avatar, avatarId, role } = body;
     const user = await this.prisma.user.update({
       where: { id },
@@ -94,12 +123,11 @@ export class UsuarioService {
         avatar,
         avatarId,
         role,
-      }
+      },
     });
     if (user) {
       throw new HttpException(`Usuário atualizado com sucesso`, HttpStatus.OK);
     }
-
 
     return user;
   }
@@ -120,5 +148,4 @@ export class UsuarioService {
       status: HttpStatus.NO_CONTENT,
     };
   }
-
 }
