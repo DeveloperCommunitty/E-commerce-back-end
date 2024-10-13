@@ -9,6 +9,7 @@ import { PerfilModule } from './modules/perfil/perfil.module';
 import { ProdutosModule } from './modules/produtos/produtos.module';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { EnderecoModule } from './modules/endereco/endereco.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     ProdutosModule,
     AuthModule,
     CaslModule,
-    CloudinaryModule
+    CloudinaryModule,
+    EnderecoModule,
   ],
   providers: [
     {

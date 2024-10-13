@@ -1,15 +1,18 @@
-import { ForbiddenException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { randomInt } from 'node:crypto';
 import { PrismaService } from '../../database/PrismaService';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 import { v2 as cloudinary } from 'cloudinary';
 
-
 @Injectable()
 export class UsuarioService {
-  constructor(private readonly prisma: PrismaService) { }
-
+  constructor(private readonly prisma: PrismaService) {}
 
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
@@ -18,11 +21,34 @@ export class UsuarioService {
         id: true,
         email: true,
         name: true,
-        password: true,
         avatar: true,
-        avatarId: true,
         role: true,
-      }
+        Profiles: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            cpf: true,
+            genero: true,
+            birthDate: true,
+            ddd: true,
+            phone: true,
+            userId: true,
+          },
+        },
+        Address: {
+          select: {
+            id: true,
+            city: true,
+            street: true,
+            neighbourhood: true,
+            publicPlace: true,
+            streetNumber: true,
+            zipCode: true,
+            userId: true,
+          },
+        },
+      },
     });
     if (!user)
       throw new HttpException(`Usuário não encontrado`, HttpStatus.NOT_FOUND);
@@ -38,11 +64,14 @@ export class UsuarioService {
         email: true,
         name: true,
         password: true,
-        role: true
-      }
+        role: true,
+      },
     });
     if (!user)
-      throw new HttpException(`Não foi possível localizar o Usuário`, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        `Não foi possível localizar o Usuário`,
+        HttpStatus.NOT_FOUND,
+      );
 
     return user;
   }
@@ -53,14 +82,15 @@ export class UsuarioService {
         id: true,
         email: true,
         name: true,
-        password: true,
         avatar: true,
-        avatarId: true,
         role: true,
-      }
+      },
     });
     if (!allUsers)
-      throw new HttpException(`Nenhum usuário encontrado`, HttpStatus.EXPECTATION_FAILED);
+      throw new HttpException(
+        `Nenhum usuário encontrado`,
+        HttpStatus.EXPECTATION_FAILED,
+      );
 
     return allUsers;
   }
@@ -79,7 +109,7 @@ export class UsuarioService {
     const ramdomSalt = randomInt(10, 16);
     const hash = await bcrypt.hash(password, ramdomSalt);
 
-    if(file && userCheck){
+    if (file && userCheck) {
       const result = await cloudinary.uploader.upload(file.path, {
         folder: 'avatar',
       });
@@ -88,9 +118,10 @@ export class UsuarioService {
       avatar_url = result.secure_url;
     }
 
-    if(file && userCheck.avatarId) await cloudinary.uploader.destroy(userCheck.avatarId);
+    if (file && userCheck.avatarId)
+      await cloudinary.uploader.destroy(userCheck.avatarId);
 
-    if(file){
+    if (file) {
       const user = await this.prisma.user.update({
         where: { id },
         data: {
@@ -98,11 +129,14 @@ export class UsuarioService {
           password: hash,
           avatar: avatar_url,
           avatarId: avatar_id,
-        }
+        },
       });
-      
+
       if (user) {
-        throw new HttpException(`Usuário atualizado com sucesso`, HttpStatus.OK);
+        throw new HttpException(
+          `Usuário atualizado com sucesso`,
+          HttpStatus.OK,
+        );
       }
 
       return user;
@@ -125,5 +159,4 @@ export class UsuarioService {
       status: HttpStatus.NO_CONTENT,
     };
   }
-
 }
