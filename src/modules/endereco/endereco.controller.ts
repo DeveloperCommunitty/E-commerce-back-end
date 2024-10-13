@@ -3,9 +3,9 @@ import {
   Get,
   Post,
   Body,
-  Put,
   Param,
   Delete,
+  Patch,
 } from '@nestjs/common';
 import { CreateAddressDto } from './dto/endereco.create.dto';
 import { EnderecoService } from './endereco.service';
@@ -28,8 +28,14 @@ export class EnderecoController {
 
   @Get('enderecos/:userid')
   @ApiOperation({ summary: 'Obter todos os endereços de um usuário' })
-  @ApiResponse({ status: 200, description: 'Lista de endereços retornada com sucesso.' })
-  @ApiResponse({ status: 404, description: 'Nenhum endereço encontrado para o usuário.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de endereços retornada com sucesso.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Nenhum endereço encontrado para o usuário.',
+  })
   findAll(@Param('userId') userId: string) {
     return this.enderecoService.findAll(userId);
   }
@@ -42,7 +48,7 @@ export class EnderecoController {
     return this.enderecoService.findOne(id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @ApiOperation({ summary: 'Atualizar um endereço pelo ID' })
   @ApiBody({ type: UpdateAddressDto })
   @ApiResponse({ status: 200, description: 'Endereço atualizado com sucesso.' })

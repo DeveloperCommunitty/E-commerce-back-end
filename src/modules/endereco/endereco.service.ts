@@ -48,6 +48,16 @@ export class EnderecoService {
   async findAll(userId: string) {
     const addresses = await this.prisma.address.findMany({
       where: { userId },
+      select: {
+        id: true,
+        userId: true,
+        street: true,
+        neighbourhood: true,
+        city: true,
+        zipCode: true,
+        streetNumber: true,
+        publicPlace: true,
+      },
       orderBy: { id: 'desc' },
     });
 
@@ -61,7 +71,21 @@ export class EnderecoService {
   }
 
   async findOne(id: string) {
-    const address = await this.prisma.address.findUnique({ where: { id } });
+    const address = await this.prisma.address.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        userId: true,
+        street: true,
+        neighbourhood: true,
+        city: true,
+        zipCode: true,
+        streetNumber: true,
+        publicPlace: true,
+      },
+    });
 
     if (!address)
       throw new HttpException(`Endereço inexistente`, HttpStatus.NOT_FOUND);
@@ -99,9 +123,9 @@ export class EnderecoService {
 
     await this.prisma.address.delete({ where: { id } });
 
-    throw new HttpException(
-      `Endereço deletado com sucesso`,
-      HttpStatus.NO_CONTENT,
-    );
+    return {
+      message: 'Endereço deletado com sucesso',
+      status: HttpStatus.NO_CONTENT,
+    };
   }
 }
