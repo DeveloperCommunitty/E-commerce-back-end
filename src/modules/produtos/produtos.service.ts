@@ -46,7 +46,7 @@ export class ProdutosService {
         HttpStatus.EXPECTATION_FAILED,
       );
 
-    let imageResults;
+    let imageResults: any[];
     if (files && files.length > 0 && !nameUnique && !skuUnique) {
       imageResults = await Promise.all(
         files.map((file) => this.cloudinary.uploadImage(file)),
@@ -65,8 +65,12 @@ export class ProdutosService {
         price,
         stock,
         sku,
-        imagemUrl: imageResults.map((element) => element.url).join(', '),
-        publicId: imageResults.map((element) => element.public_id).join(', '),
+        imagemUrl: imageResults
+          .map((element: { url: any }) => element.url)
+          .join(', '),
+        publicId: imageResults
+          .map((element: { public_id: any }) => element.public_id)
+          .join(', '),
       },
       select: {
         id: true,
@@ -173,7 +177,7 @@ export class ProdutosService {
         }),
       );
 
-      let imageResults;
+      let imageResults: any[];
       imageResults = await Promise.all(
         files.map((file) => this.cloudinary.uploadImage(file)),
       );
@@ -187,8 +191,12 @@ export class ProdutosService {
           price,
           stock,
           sku,
-          imagemUrl: imageResults.map((element) => element.url).join(', '),
-          publicId: imageResults.map((element) => element.public_id).join(', '),
+          imagemUrl: imageResults
+            .map((element: { url: any }) => element.url)
+            .join(', '),
+          publicId: imageResults
+            .map((element: { public_id: any }) => element.public_id)
+            .join(', '),
         },
       });
 
