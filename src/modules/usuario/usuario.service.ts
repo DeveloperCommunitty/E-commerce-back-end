@@ -14,12 +14,14 @@ import { v2 as cloudinary } from 'cloudinary';
 export class UsuarioService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findOne(id: string) {
+  async findOne(identifier: string) {
+    const isEmail = identifier.includes('@');
     const user = await this.prisma.user.findUnique({
-      where: { id },
+      where: isEmail ? { email: identifier } : { id: identifier },
       select: {
         id: true,
         email: true,
+        password: true,
         name: true,
         avatar: true,
         role: true,
@@ -52,26 +54,6 @@ export class UsuarioService {
     });
     if (!user)
       throw new HttpException(`Usuário não encontrado`, HttpStatus.NOT_FOUND);
-
-    return user;
-  }
-
-  async findOneForEmail(email: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        password: true,
-        role: true,
-      },
-    });
-    if (!user)
-      throw new HttpException(
-        `Não foi possível localizar o Usuário`,
-        HttpStatus.NOT_FOUND,
-      );
 
     return user;
   }
