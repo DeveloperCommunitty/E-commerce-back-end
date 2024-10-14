@@ -30,7 +30,7 @@ export class ProdutosController {
   constructor(private readonly productsService: ProdutosService) {}
 
   @ApiOperation({ summary: 'Lista todos os produtos' })
-  @ApiBearerAuth()
+  @ApiBearerAuth('access_token')
   @ApiResponse({ status: 200 })
   @ApiResponse({ status: 404, description: 'Erro ao listar produtos' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
@@ -58,11 +58,14 @@ export class ProdutosController {
       'Disponível apenas para Admin. Adicione a imagem com a chave: files.',
   })
   @ApiResponse({ status: 200 })
-  @ApiResponse({ status: 404, description: 'Nenhum arquivo enviado ou produto existente' })
+  @ApiResponse({
+    status: 404,
+    description: 'Nenhum arquivo enviado ou produto existente',
+  })
   @ApiResponse({ status: 409, description: 'O produto ou o código já existe' })
   @ApiResponse({ status: 417, description: 'Erro ao criar produto' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
-  @ApiBearerAuth()
+  @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Admin, 'all'))
   create(
     @Body() body: ProductsDto,
@@ -90,7 +93,7 @@ export class ProdutosController {
   })
   @ApiParam({ name: 'id', description: 'Id do produto' })
   @ApiResponse({
-    status: 200
+    status: 200,
   })
   @ApiResponse({
     status: 304,
@@ -99,7 +102,7 @@ export class ProdutosController {
   @ApiResponse({ status: 404, description: 'Produto inexistente' })
   @ApiResponse({ status: 417, description: 'Erro ao atualizar produto' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
-  @ApiBearerAuth()
+  @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Admin, 'all'))
   @Patch(':id')
   update(
@@ -111,7 +114,7 @@ export class ProdutosController {
   }
 
   @ApiOperation({ summary: 'Lista produto por Id' })
-  @ApiBearerAuth()
+  @ApiBearerAuth('access_token')
   @ApiParam({ name: 'id', description: 'Id do produto' })
   @ApiResponse({ status: 200 })
   @ApiResponse({ status: 404, description: 'Produto inexistente' })
@@ -131,7 +134,7 @@ export class ProdutosController {
   @ApiResponse({ status: 417, description: 'Erro ao atualizar produto' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @Delete(':id')
-  @ApiBearerAuth()
+  @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Admin, 'all'))
   destroy(@Param('id') id: string) {
     return this.productsService.destroy(id);

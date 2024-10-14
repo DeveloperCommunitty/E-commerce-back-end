@@ -29,7 +29,7 @@ export class UsuarioController {
   @ApiResponse({ status: 200 })
   @ApiResponse({ status: 417, description: `Nenhum usuário encontrado` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
-  @ApiBearerAuth()
+  @ApiBearerAuth('access_token')
   findAll() {
     return this.usuario.findAll();
   }
@@ -39,7 +39,7 @@ export class UsuarioController {
   @ApiResponse({ status: 200 })
   @ApiResponse({ status: 404, description: `Usuário não encontrado` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
-  @ApiBearerAuth()
+  @ApiBearerAuth('access_token')
   findOne(@Param('id') id: string) {
     return this.usuario.findOne(id);
   }
@@ -61,7 +61,7 @@ export class UsuarioController {
   @ApiResponse({ status: 200, description: `Usuário atualizado com sucesso` })
   @ApiResponse({ status: 404, description: `Usuário inexistente` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
-  @ApiBearerAuth()
+  @ApiBearerAuth('access_token')
   update(
     @Param('id') id: string,
     @Body() body: UpdateUsuarioDto,
@@ -75,7 +75,7 @@ export class UsuarioController {
   @ApiResponse({ status: 204, description: `Usuário deletado com sucesso` })
   @ApiResponse({ status: 404, description: `Usuário inexistente` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
-  @ApiBearerAuth()
+  @ApiBearerAuth('access_token')
   remove(@Param('id') id: string) {
     return this.usuario.remove(id);
   }
