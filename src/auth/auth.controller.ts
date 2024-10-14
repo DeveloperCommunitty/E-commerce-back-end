@@ -15,8 +15,12 @@ import { AuthDto } from './authDto/authDto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @ApiOperation({ summary: 'Login do usuário e retorno do token de acesso.' })
+  @ApiOperation({ summary: 'Login do usuário e retorno do token de acesso' })
+  @ApiResponse({ status: 200, description: 'Token' })
+  @ApiResponse({ status: 400, description: 'Falha de autenticação.' })
   @ApiResponse({ status: 401, description: 'Token Inválido!' })
+  @ApiResponse({ status: 404, description: 'Não foi possível localizar o Usuário'})
+  @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @HttpCode(HttpStatus.OK)
   @Post()
   @Public()

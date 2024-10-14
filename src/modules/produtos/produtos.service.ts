@@ -30,8 +30,8 @@ export class ProdutosService {
 
     if (nameUnique)
       throw new HttpException(
-        `O produto já existe!`,
-        HttpStatus.EXPECTATION_FAILED,
+        `O produto já existe`,
+        HttpStatus.CONFLICT,
       );
 
     const skuUnique = await this.prisma.products.findFirst({
@@ -42,8 +42,8 @@ export class ProdutosService {
 
     if (skuUnique)
       throw new HttpException(
-        `O código do produto já existe!`,
-        HttpStatus.EXPECTATION_FAILED,
+        `O código do produto já existe`,
+        HttpStatus.CONFLICT,
       );
 
     let imageResults: any[];
@@ -53,7 +53,7 @@ export class ProdutosService {
       );
     } else {
       throw new HttpException(
-        'Nenhum arquivo enviado ou produto existente.',
+        'Nenhum arquivo enviado ou produto existente',
         HttpStatus.NOT_FOUND,
       );
     }
@@ -132,7 +132,7 @@ export class ProdutosService {
     });
 
     if (!existsProduct)
-      throw new HttpException(`Produto inexistente!`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Produto inexistente`, HttpStatus.NOT_FOUND);
 
     const nameUnique = await this.prisma.products.findFirst({
       where: {
@@ -143,8 +143,8 @@ export class ProdutosService {
 
     if (nameUnique)
       throw new HttpException(
-        `Nome do produto já está cadastrado!`,
-        HttpStatus.EXPECTATION_FAILED,
+        `Nome do produto já está cadastrado`,
+        HttpStatus.NOT_MODIFIED,
       );
 
     const skuUnique = await this.prisma.products.findFirst({
@@ -156,7 +156,7 @@ export class ProdutosService {
 
     if (skuUnique)
       throw new HttpException(
-        `O código do produto já existe!`,
+        `O código do produto já existe`,
         HttpStatus.EXPECTATION_FAILED,
       );
 
@@ -235,7 +235,7 @@ export class ProdutosService {
     const product = await this.prisma.products.findUnique({ where: { id } });
 
     if (!product)
-      throw new HttpException(`Produto inexistente!`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Produto inexistente`, HttpStatus.NOT_FOUND);
 
     return product;
   }
@@ -244,7 +244,7 @@ export class ProdutosService {
     const product = await this.prisma.products.findUnique({ where: { id } });
 
     if (!product)
-      throw new HttpException(`Produto inexistente!`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Produto inexistente`, HttpStatus.NOT_FOUND);
 
     if (product.publicId) {
       const publicIds = product.publicId.split(', ');

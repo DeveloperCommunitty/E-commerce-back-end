@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { error } from 'node:console';
+import { NotFoundError } from 'rxjs';
 import { UsuarioService } from 'src/modules/usuario/usuario.service';
 
 @Injectable()
@@ -14,9 +16,6 @@ export class AuthService {
 
     const user = await this.userService.findOneForEmail(email);
 
-    if (!user) {
-        throw new UnauthorizedException();
-    }
     const payload = { userEmail: user.email, userName: user.id, role: user.role };
     
     const passwordCorrect = await bcrypt.compare(password, user.password);

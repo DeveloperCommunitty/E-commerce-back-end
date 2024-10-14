@@ -31,8 +31,8 @@ export class AuthGuard implements CanActivate {
 
     if (!token) {
       throw new UnauthorizedException({
-        message: 'Acesso Restrito!',
-        error: 'Token inexistente!',
+        message: 'Token inexistente!',
+        error: 'Acesso Restrito!',
       });
     }
     try {
