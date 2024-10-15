@@ -29,10 +29,7 @@ export class ProdutosService {
     });
 
     if (nameUnique)
-      throw new HttpException(
-        `O produto já existe`,
-        HttpStatus.CONFLICT,
-      );
+      throw new HttpException(`O produto já existe`, HttpStatus.CONFLICT);
 
     const skuUnique = await this.prisma.products.findFirst({
       where: {
@@ -80,9 +77,6 @@ export class ProdutosService {
         sku: true,
         stock: true,
         imagemUrl: true,
-        publicId: true,
-        CartItems: true,
-        createdAt: true,
       },
     });
 
