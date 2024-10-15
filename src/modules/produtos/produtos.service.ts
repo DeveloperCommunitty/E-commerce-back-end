@@ -8,6 +8,7 @@ import {
 import { PrismaService } from 'src/database/PrismaService';
 import { ProductsDto } from './dto/produtos.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { UpdateProductsDto } from './dto/produtos.update.dto';
 
 @Injectable()
 export class ProdutosService {
@@ -99,9 +100,6 @@ export class ProdutosService {
         sku: true,
         stock: true,
         imagemUrl: true,
-        publicId: true,
-        CartItems: true,
-        createdAt: true,
       },
     });
 
@@ -116,7 +114,7 @@ export class ProdutosService {
 
   async update(
     @Body() id: string,
-    body: ProductsDto,
+    body: UpdateProductsDto,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     const { name, description, price, stock, sku } = body;
@@ -128,19 +126,6 @@ export class ProdutosService {
     if (!existsProduct)
       throw new HttpException(`Produto inexistente`, HttpStatus.NOT_FOUND);
 
-    const nameUnique = await this.prisma.products.findFirst({
-      where: {
-        sku: sku,
-        id: { not: id },
-      },
-    });
-
-    if (nameUnique)
-      throw new HttpException(
-        `Nome do produto já está cadastrado`,
-        HttpStatus.NOT_MODIFIED,
-      );
-
     const skuUnique = await this.prisma.products.findFirst({
       where: {
         sku: sku,
@@ -150,8 +135,8 @@ export class ProdutosService {
 
     if (skuUnique)
       throw new HttpException(
-        `O código do produto já existe`,
-        HttpStatus.EXPECTATION_FAILED,
+        `O código do produto não pertence a este ID`,
+        HttpStatus.CONFLICT,
       );
 
     if (existsProduct.publicId && files && files.length > 0) {
