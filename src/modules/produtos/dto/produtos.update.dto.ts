@@ -53,9 +53,9 @@ export class UpdateProductsDto {
 
   @ApiProperty({
     example: 'SOK-300',
-    description: 'Código de identificação único',
-    required: false,
+    description:
+      'Código de identificação único. Deve ser passado para atualizar o produto.',
+    required: true,
   })
-  @IsOptional()
   sku: string;
 }
