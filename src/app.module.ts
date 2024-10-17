@@ -10,6 +10,10 @@ import { ProdutosModule } from './modules/produtos/produtos.module';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { EnderecoModule } from './modules/endereco/endereco.module';
+import { StripeModule } from './modules/stripe/stripe.module';
+import { StripeService } from './modules/stripe/stripe.service';
+import { StripeController } from './modules/stripe/stripe.controller';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -21,6 +25,8 @@ import { EnderecoModule } from './modules/endereco/endereco.module';
     CaslModule,
     CloudinaryModule,
     EnderecoModule,
+    StripeModule,
+    ConfigModule
   ],
   providers: [
     {
@@ -28,6 +34,8 @@ import { EnderecoModule } from './modules/endereco/endereco.module';
       useClass: AuthGuard,
     },
     CloudinaryService,
+    StripeService,
   ],
+  controllers: [StripeController],
 })
 export class AppModule {}
