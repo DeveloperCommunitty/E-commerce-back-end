@@ -1,4 +1,4 @@
-import { Body, Injectable, Param, Req } from '@nestjs/common';
+import { Body, HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
 import { CreateCartDTO } from './dto/cart.create.dto';
 
@@ -46,6 +46,8 @@ export class CartService {
         total: true,
       }
     });
+    if(!cart) 
+      throw new HttpException('Erro ao criar carrinho', HttpStatus.BAD_REQUEST)
 
     const cartItems = productQuantity.map(product => ({
       quantity: product.quantity,
@@ -57,6 +59,14 @@ export class CartService {
     await this.prisma.cartItems.createMany({
       data: cartItems,
     });
+
+    return cart;
+  }
+
+  async findById(id: string){
+    const cart = await this.prisma.carts.findUnique({where: {id}})
+
+    if(!cart) throw new HttpException('Carrinho não encontrado', HttpStatus.NOT_FOUND)
 
     return cart;
   }
@@ -80,12 +90,79 @@ export class CartService {
       },
     });
 
-    return cart;
+    if(!cart) 
+      throw new HttpException('Erro ao listar carrinhos', HttpStatus.BAD_REQUEST)
 
+    return cart;
   }
 
-  
+  async findAllUsers(){
+    const carts = await this.prisma.carts.findMany({
+      orderBy: {
+        id: 'desc'
+      },
+      select: {
+        id: true,
+        sessionId: true,
+        paymentId: true,
+        status: true,
+        userId: true,
+        total: true,
+        CartItems: true
+      }
+    })
+
+    if(!carts) 
+      throw new HttpException('Erro ao listar carrinhos', HttpStatus.BAD_REQUEST)
+    return carts;
+  }
+
+  async update(id: string){
+    const checkCart = await this.prisma.carts.findUnique({where: {id}})
+    if(!checkCart) 
+      throw new HttpException('Carrinho não encontrado', HttpStatus.NOT_FOUND)
+
+    const updatedCart = await this.prisma.carts.update({
+      where: {
+        id
+      }, 
+      data: {
+
+      }
+    })
+    if(!updatedCart)
+      throw new HttpException('Erro ao atualizar carrinho', HttpStatus.BAD_REQUEST)
+
+    return updatedCart;
+  }
 
 
+  async destroy(id: string){
+    const checkCart = await this.prisma.carts.findUnique({where: {id}})
+    if(!checkCart) 
+      throw new HttpException('Carrinho não encontrado', HttpStatus.NOT_FOUND)
 
+    if(checkCart.status == 'PAGO' || checkCart.status == 'CANCELADO') 
+      throw new HttpException('O carrinho não pode ser deletado', HttpStatus.BAD_REQUEST)
+
+    const deletedItems = await this.prisma.cartItems.deleteMany({where: {cartId: checkCart.id}})
+    if(!deletedItems)
+      throw new HttpException('Erro ao deletar carrinho', HttpStatus.BAD_REQUEST)
+
+    const updatedCart = await this.prisma.carts.update({
+      where: {
+        id
+      }, 
+      data: {
+        total: 0
+      }
+    })
+    if(!updatedCart)
+      throw new HttpException('Erro ao atualizar carrinho', HttpStatus.BAD_REQUEST)
+
+    return ({
+      message: 'Itens deletados com sucesso',
+      cart: updatedCart
+    })
+  }
 }
