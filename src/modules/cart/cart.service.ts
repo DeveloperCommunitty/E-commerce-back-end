@@ -91,34 +91,6 @@ export class CartService {
     return cart;
   }
 
-  async findAll(@Param() id: string) {
-    const cart = await this.prisma.carts.findMany({
-      where: {
-        userId: id,
-      },
-      orderBy: {
-        id: 'desc',
-      },
-      select: {
-        id: true,
-        sessionId: true,
-        paymentId: true,
-        status: true,
-        userId: true,
-        total: true,
-        CartItems: true,
-      },
-    });
-
-    if (!cart)
-      throw new HttpException(
-        'Erro ao listar carrinhos',
-        HttpStatus.BAD_REQUEST,
-      );
-
-    return cart;
-  }
-
   async findAllUsers() {
     const carts = await this.prisma.carts.findMany({
       orderBy: {

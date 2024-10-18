@@ -66,19 +66,6 @@ export class CartController {
     return this.cartService.findById(id);
   }
 
-  @Get('carrinhos/:userId')
-  @ApiOperation({ summary: 'Lista os carrinhos pelo id do usuário' })
-  @ApiResponse({ status: 200, description: 'Listagem gerada com sucesso' })
-  @ApiResponse({ status: 400, description: 'Erro ao listar carrinhos' })
-  @ApiResponse({ status: 401, description: 'Usuário não autorizado' })
-  @ApiResponse({ status: 404, description: 'Usuário inexistente' })
-  @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
-  @ApiBearerAuth('access_token')
-  @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
-  async findAll(@Param('userId') id: string) {
-    return this.cartService.findAll(id);
-  }
-
   @Patch(':id')
   @ApiOperation({ summary: 'Atualiza dados de um carrinho' })
   @ApiResponse({ status: 200, description: 'Dados atualizados com sucesso' })
