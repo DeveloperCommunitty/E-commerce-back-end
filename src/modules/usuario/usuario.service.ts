@@ -1,14 +1,9 @@
-import {
-  ForbiddenException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
+import { v2 as cloudinary } from 'cloudinary';
 import { randomInt } from 'node:crypto';
 import { PrismaService } from '../../database/PrismaService';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
-import { v2 as cloudinary } from 'cloudinary';
 
 @Injectable()
 export class UsuarioService {
@@ -48,6 +43,21 @@ export class UsuarioService {
             streetNumber: true,
             zipCode: true,
             userId: true,
+          },
+        },
+        Carts: {
+          select: {
+            id: true,
+            status: true,
+            total: true,
+            CartItems: {
+              select: {
+                id: true,
+                quantity: true,
+                cartId: true,
+                productId: true,
+              },
+            },
           },
         },
       },

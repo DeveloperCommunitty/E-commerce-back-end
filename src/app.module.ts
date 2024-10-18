@@ -10,6 +10,7 @@ import { ProdutosModule } from './modules/produtos/produtos.module';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { EnderecoModule } from './modules/endereco/endereco.module';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { EnderecoModule } from './modules/endereco/endereco.module';
     CaslModule,
     CloudinaryModule,
     EnderecoModule,
+    CartModule,
   ],
   providers: [
     {
