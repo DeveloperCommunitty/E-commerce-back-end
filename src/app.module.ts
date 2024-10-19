@@ -11,8 +11,6 @@ import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { EnderecoModule } from './modules/endereco/endereco.module';
 import { StripeModule } from './modules/stripe/stripe.module';
-import { StripeService } from './modules/stripe/stripe.service';
-import { StripeController } from './modules/stripe/stripe.controller';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -26,7 +24,7 @@ import { ConfigModule } from '@nestjs/config';
     CloudinaryModule,
     EnderecoModule,
     StripeModule,
-    ConfigModule
+    ConfigModule,
   ],
   providers: [
     {
@@ -34,8 +32,7 @@ import { ConfigModule } from '@nestjs/config';
       useClass: AuthGuard,
     },
     CloudinaryService,
-    StripeService,
   ],
-  controllers: [StripeController],
+  controllers: [],
 })
 export class AppModule {}

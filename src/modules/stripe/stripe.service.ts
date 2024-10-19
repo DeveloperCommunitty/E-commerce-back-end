@@ -6,9 +6,9 @@ import { ConfigService } from '@nestjs/config';
 export class StripeService {
   private stripe: Stripe;
 
-  constructor(private configService: ConfigService) {
-    this.stripe = new Stripe(this.configService.get<string>('STRIPE_SECRET_KEY'), {
-      apiVersion: '2024-09-30.acacia', 
+  constructor() {
+    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-09-30.acacia',
     });
   }
 
@@ -16,7 +16,7 @@ export class StripeService {
     return await this.stripe.paymentIntents.create({
       amount,
       currency,
-      payment_method_types: ['card'], 
+      payment_method_types: ['card'],
     });
   }
 }
