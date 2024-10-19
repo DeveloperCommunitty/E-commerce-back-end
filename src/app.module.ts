@@ -12,6 +12,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { EnderecoModule } from './modules/endereco/endereco.module';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { ConfigModule } from '@nestjs/config';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ConfigModule } from '@nestjs/config';
     EnderecoModule,
     StripeModule,
     ConfigModule,
+    CartModule,
   ],
   providers: [
     {
