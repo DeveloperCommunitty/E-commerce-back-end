@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { config } from 'dotenv';
+import * as bodyParser from 'body-parser';
 config();
 
 async function bootstrap() {
@@ -19,6 +20,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  app.use('/webhook', bodyParser.raw({ type: 'application/json' }));
 
   const config = new DocumentBuilder()
     .setTitle('API E-Commerce NestJS')

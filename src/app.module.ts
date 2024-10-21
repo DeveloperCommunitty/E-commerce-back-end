@@ -16,6 +16,9 @@ import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     UsuarioModule,
     CadastroModule,
     PerfilModule,
@@ -25,7 +28,6 @@ import { CartModule } from './modules/cart/cart.module';
     CloudinaryModule,
     EnderecoModule,
     StripeModule,
-    ConfigModule,
     CartModule,
   ],
   providers: [

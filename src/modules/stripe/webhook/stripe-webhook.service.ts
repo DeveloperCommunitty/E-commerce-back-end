@@ -1,59 +1,43 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RequestWithRawBody } from 'src/middleware/raw-body';
 import Stripe from 'stripe';
 
 @Injectable()
 export class StripeWebhookService {
   private stripe: Stripe;
 
-  constructor() {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  constructor(private configService: ConfigService) {
+    this.stripe = new Stripe(this.configService.get('STRIPE_SECRET_KEY'), {
       apiVersion: '2022-11-15' as any,
     });
   }
 
-  async handleEvent(
-    payload: any,
-    signature: string,
-    request: RequestWithRawBody,
-  ) {
-    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    let event: Stripe.Event;
-
-    try {
-      event = this.stripe.webhooks.constructEvent(
-        request.rawBody,
-        signature,
-        endpointSecret,
-      );
-    } catch (err) {
-      throw new BadRequestException(`Webhook Error: ${err.message}`);
-    }
-
+  handleEvent(event: Stripe.Event) {
     switch (event.type) {
-      case 'checkout.session.completed':
-        const session = event.data.object as Stripe.Checkout.Session;
-
-        await this.handleCheckoutSessionCompleted(session);
-        break;
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        console.log('Pagamento bem-sucedido:', paymentIntent.id);
 
-        console.log(paymentIntent);
-        console.log('PAGAMENTO COM SUCESSO!');
         break;
-
+      case 'payment_intent.payment_failed':
+        const failedIntent = event.data.object as Stripe.PaymentIntent;
+        console.log('Pagamento falhou:', failedIntent.id);
+        break;
       default:
         console.log(`Evento não tratado: ${event.type}`);
     }
-
-    return { received: true };
   }
 
-  private async handleCheckoutSessionCompleted(
-    session: Stripe.Checkout.Session,
-  ) {
-    console.log('Sessão de checkout concluída:', session);
+  constructEventFromPayload(signature: string, payload: Buffer) {
+    try {
+      const endpointSecret = this.configService.get('STRIPE_WEBHOOK_SECRET');
+      return this.stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        endpointSecret,
+      );
+    } catch (error) {
+      throw new Error(`Erro ao validar o evento do Stripe: ${error.message}`);
+    }
   }
 }
