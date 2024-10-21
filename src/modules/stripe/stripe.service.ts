@@ -45,7 +45,6 @@ export class StripeService {
         success_url: `${process.env.FRONTEND_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.FRONTEND_URL}/checkout/cancel`,
         client_reference_id: userId,
-        metadata: userId ? { userId } : {},
       });
 
       return { sessionId: session.id, url: session.url };

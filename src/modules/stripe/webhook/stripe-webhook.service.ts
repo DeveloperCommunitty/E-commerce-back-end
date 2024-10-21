@@ -13,18 +13,31 @@ export class StripeWebhookService {
   }
 
   handleEvent(event: Stripe.Event) {
-    switch (event.type) {
-      case 'payment_intent.succeeded':
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        console.log('Pagamento bem-sucedido:', paymentIntent.id);
+    try {
+      switch (event.type) {
+        case 'checkout.session.completed':
+          const session = event.data.object as Stripe.Checkout.Session;
 
-        break;
-      case 'payment_intent.payment_failed':
-        const failedIntent = event.data.object as Stripe.PaymentIntent;
-        console.log('Pagamento falhou:', failedIntent.id);
-        break;
-      default:
-        console.log(`Evento não tratado: ${event.type}`);
+          if (session.payment_status === 'paid') {
+            const userId = session.client_reference_id;
+            console.warn(userId);
+            console.error(userId);
+            console.log(session);
+          } else {
+            console.error('Pagamento ainda não concluído.');
+          }
+          break;
+
+        case 'checkout.session.expired':
+          const expiredSession = event.data.object as Stripe.Checkout.Session;
+          console.warn(`Sessão de pagamento expirada: ${expiredSession.id}`);
+          break;
+
+        default:
+          console.warn(`Evento não tratado: ${event.type}`);
+      }
+    } catch (error) {
+      console.error(`Erro ao processar o evento ${event.type}:`, error.message);
     }
   }
 
