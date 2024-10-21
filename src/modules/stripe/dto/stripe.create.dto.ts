@@ -1,23 +1,11 @@
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreatePaymentDto {
+export class checkoutDto {
   @IsNotEmpty()
   @IsString()
-  cardNumber: string;
-
-  @IsNotEmpty()
-  @IsString()
-  cardExpiry: string;
+  userId: string;
 
   @IsNotEmpty()
   @IsString()
-  cardCvc: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  amount: number;
-
-  @IsNotEmpty()
-  @IsString()
-  address: string;
+  cartId: string;
 }
