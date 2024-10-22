@@ -24,6 +24,11 @@ enum CartStatus {
   CANCELADO
 }
 
+enum StatusEstoque {
+  DISPONIVEL
+  ESGOTADO
+}
+
 model User {
   id        String     @id @default(uuid())
   email     String     @unique
@@ -90,17 +95,18 @@ model Carts {
 }
 
 model Products {
-  id          String      @id @default(uuid())
-  name        String
-  description String
-  price       Float
-  stock       Int
-  sku         String      @unique
-  imagemUrl   String      @map("imagem_id")
-  publicId    String      @map("public_id")
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
-  CartItems   CartItems[]
+  id            String        @id @default(uuid())
+  name          String
+  description   String
+  price         Float
+  stock         Int
+  sku           String        @unique
+  statusEstoque StatusEstoque @default(DISPONIVEL) @map("status_estoque")
+  imagemUrl     String        @map("imagem_id")
+  publicId      String        @map("public_id")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  CartItems     CartItems[]
 
   @@map("products")
 }
