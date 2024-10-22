@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -40,8 +41,9 @@ export class UsuarioController {
   @ApiResponse({ status: 404, description: `Usuário não encontrado` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
-  findOne(@Param('id') id: string) {
-    return this.usuario.findOne(id);
+  findOne(@Param('id') id: string, @Query('page') page: string) {
+    const pageNumber = page ? parseInt(page, 10) : 1;
+    return this.usuario.findOne(id, pageNumber);
   }
 
   @Patch(':id')

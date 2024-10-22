@@ -17,12 +17,12 @@ export class AuthService {
     const user = await this.userService.findOne(email);
 
     const payload = {
-      userEmail: user.email,
-      userName: user.id,
-      role: user.role,
+      userEmail: user.user.email,
+      userName: user.user.id,
+      role: user.user.role,
     };
 
-    const passwordCorrect = await bcrypt.compare(password, user.password);
+    const passwordCorrect = await bcrypt.compare(password, user.user.password);
 
     if (!passwordCorrect)
       throw new BadRequestException({

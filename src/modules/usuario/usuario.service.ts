@@ -9,8 +9,13 @@ import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 export class UsuarioService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findOne(identifier: string) {
+  async findOne(identifier: string, page: number = 1) {
     const isEmail = identifier.includes('@');
+
+    const pageSize = 5;
+    page = Math.max(page, 1);
+    const offset = (page - 1) * pageSize;
+
     const user = await this.prisma.user.findUnique({
       where: isEmail ? { email: identifier } : { id: identifier },
       select: {
@@ -61,13 +66,21 @@ export class UsuarioService {
               },
             },
           },
+          skip: offset,
+          take: pageSize,
         },
       },
     });
     if (!user)
       throw new HttpException(`Usuário não encontrado`, HttpStatus.NOT_FOUND);
 
-    return user;
+    const totalCarts = await this.prisma.carts.count({
+      where: { userId: user.id },
+    });
+
+    const totalPages = Math.ceil(totalCarts / pageSize);
+
+    return { user, totalPages, totalCarts };
   }
 
   async findAll() {
