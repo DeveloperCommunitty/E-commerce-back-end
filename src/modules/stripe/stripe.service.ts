@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
 import Stripe from 'stripe';
 import { checkoutDto } from './dto/stripe.create.dto';
@@ -23,7 +23,10 @@ export class StripeService {
       });
 
       if (cartItems.length === 0) {
-        throw new Error('O carrinho está vazio.');
+        return {
+          status: HttpStatus.NOT_FOUND,
+          message: 'Carrinho não encontrado.',
+        };
       }
 
       const lineItems = cartItems.map((item) => ({

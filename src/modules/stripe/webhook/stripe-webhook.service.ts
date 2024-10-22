@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/database/PrismaService';
 import Stripe from 'stripe';
@@ -31,17 +31,50 @@ export class StripeWebhookService {
                 status: 'PENDENTE',
                 sessionId: session.id,
               },
+              include: { CartItems: { include: { products: true } } },
             });
 
-            if (cartSale) {
-              await this.prisma.carts.update({
-                where: { id: cartSale.id },
-                data: {
-                  status: 'PAGO',
-                  paymentId: session.payment_intent as string,
-                },
-              });
+            if (!cartSale) {
+              return {
+                status: HttpStatus.NOT_FOUND,
+                message: 'Carrinho não encontrado.',
+              };
             }
+
+            await Promise.all(
+              cartSale.CartItems.map(async (item) => {
+                const product = await this.prisma.products.findUnique({
+                  where: { id: item.productId },
+                });
+
+                if (!product) {
+                  throw new Error(
+                    `Produto não encontrado com ID: ${item.productId}`,
+                  );
+                }
+
+                const newStockAmount = product.stock - item.quantity;
+
+                await this.prisma.products.update({
+                  where: { id: item.productId },
+                  data: {
+                    stock: newStockAmount,
+                    statusEstoque:
+                      newStockAmount === 0
+                        ? 'ESGOTADO' //
+                        : 'DISPONIVEL',
+                  },
+                });
+              }),
+            );
+
+            await this.prisma.carts.update({
+              where: { id: cartSale.id },
+              data: {
+                status: 'PAGO',
+                paymentId: session.payment_intent as string,
+              },
+            });
           } else {
             console.error('Pagamento ainda não concluído.');
           }
