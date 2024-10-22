@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { randomInt } from 'node:crypto';
 import { PrismaService } from '../../database/PrismaService';
@@ -49,6 +44,21 @@ export class UsuarioService {
             streetNumber: true,
             zipCode: true,
             userId: true,
+          },
+        },
+        Carts: {
+          select: {
+            id: true,
+            status: true,
+            total: true,
+            CartItems: {
+              select: {
+                id: true,
+                quantity: true,
+                cartId: true,
+                productId: true,
+              },
+            },
           },
         },
       },

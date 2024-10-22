@@ -30,7 +30,7 @@ export class UsuarioController {
   @Get('usuarios')
   @ApiOperation({ summary: 'Lista todos os usuários' })
   @ApiResponse({ status: 200 })
-  @ApiResponse({ status: 417, description: `Nenhum usuário encontrado` })
+  @ApiResponse({ status: 404, description: `Nenhum usuário encontrado` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiQuery({ name: 'page', required: false, description: 'Número da página (opcional, padrão: 1)', type: Number })
   @ApiQuery({ name: 'pageSize', required: false, description: 'Quantidade de itens por página (opcional, padrão: 10)', type: Number })

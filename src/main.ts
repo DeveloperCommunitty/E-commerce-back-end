@@ -7,6 +7,13 @@ config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -31,6 +38,7 @@ async function bootstrap() {
     .addTag('Cadastrar')
     .addTag('Usuarios')
     .addTag('Perfil')
+    .addTag('Carrinho')
     .build();
   const document = SwaggerModule.createDocument(app, config);
 
