@@ -47,6 +47,13 @@ export class StripeService {
         client_reference_id: userId,
       });
 
+      await this.prisma.carts.update({
+        where: { id: cartId },
+        data: {
+          sessionId: session.id,
+        },
+      });
+
       return { sessionId: session.id, url: session.url };
     } catch (error) {
       throw new Error(`Erro ao criar sessão de checkout: ${error.message}`);

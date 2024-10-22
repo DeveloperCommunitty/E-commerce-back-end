@@ -1,18 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PrismaService } from 'src/database/PrismaService';
 import Stripe from 'stripe';
 
 @Injectable()
 export class StripeWebhookService {
   private stripe: Stripe;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private readonly prisma: PrismaService,
+  ) {
     this.stripe = new Stripe(this.configService.get('STRIPE_SECRET_KEY'), {
       apiVersion: '2022-11-15' as any,
     });
   }
 
-  handleEvent(event: Stripe.Event) {
+  async handleEvent(event: Stripe.Event) {
     try {
       switch (event.type) {
         case 'checkout.session.completed':
@@ -20,9 +24,24 @@ export class StripeWebhookService {
 
           if (session.payment_status === 'paid') {
             const userId = session.client_reference_id;
-            console.warn(userId);
-            console.error(userId);
-            console.log(session);
+
+            const cartSale = await this.prisma.carts.findFirst({
+              where: {
+                userId: userId,
+                status: 'PENDENTE',
+                sessionId: session.id,
+              },
+            });
+
+            if (cartSale) {
+              await this.prisma.carts.update({
+                where: { id: cartSale.id },
+                data: {
+                  status: 'PAGO',
+                  paymentId: session.payment_intent as string,
+                },
+              });
+            }
           } else {
             console.error('Pagamento ainda não concluído.');
           }
