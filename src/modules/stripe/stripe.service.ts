@@ -45,8 +45,8 @@ export class StripeService {
         payment_method_types: ['card'],
         mode: 'payment',
         line_items: lineItems,
-        success_url: `${process.env.FRONTEND_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.FRONTEND_URL}/checkout/cancel`,
+        success_url: `${process.env.FRONTEND_URL}/pagamento_ok?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.FRONTEND_URL}/pagamento_rec`,
         client_reference_id: userId,
       });
 
