@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsOptional, Length } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, Length } from 'class-validator';
+
+export enum StatusEstoque {
+  DISPONIVEL = 'DISPONIVEL',
+  ESGOTADO = 'ESGOTADO',
+}
 
 export class UpdateProductsDto {
   @ApiProperty({
@@ -32,6 +37,18 @@ export class UpdateProductsDto {
   @IsOptional()
   @Length(10, 100)
   description: string;
+
+  @ApiProperty({
+    example: 'DISPONIVEL',
+    description: 'Status atual do estoque do produto',
+    enum: StatusEstoque, // Aqui mostramos o enum no Swagger
+  })
+  @IsEnum(StatusEstoque, {
+    message:
+      'O status deve ser um valor válido: Disponível, Esgotado ou Limitado',
+  }) // Valida o enum
+  @IsNotEmpty({ message: 'Digite o status do estoque!' })
+  statusEstoque: StatusEstoque;
 
   @ApiProperty({
     example: '120',
