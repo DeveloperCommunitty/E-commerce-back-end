@@ -50,6 +50,8 @@ export class UsuarioService {
             id: true,
             status: true,
             total: true,
+            sessionId: true,
+            paymentId: true,
             CartItems: {
               select: {
                 id: true,
