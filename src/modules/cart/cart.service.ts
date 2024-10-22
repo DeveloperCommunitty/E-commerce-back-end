@@ -1,10 +1,4 @@
-import {
-  Body,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  Param,
-} from '@nestjs/common';
+import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
 import { CreateCartDTO } from './dto/cart.create.dto';
 
@@ -20,16 +14,50 @@ export class CartService {
     });
 
     if (productsByDatabase.length === 0) {
-      throw new Error('Nenhum produto encontrado');
+      throw new HttpException(
+        'Nenhum produto encontrado',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     let total = 0;
-    const productQuantity = productsByDatabase.map((product) => {
+    const productQuantity = [];
+
+    for (const product of productsByDatabase) {
       const quantity =
         products.find((p) => p.productId === product.id)?.quantity || 0;
+
+      if (product.isLocked) {
+        throw new HttpException(
+          `Produto ${product.name} está temporariamente indisponível para adição ao carrinho. Por favor, tente novamente mais tarde.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (product.stock === 0) {
+        throw new HttpException(
+          `Produto ${product.name} está esgotado.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (quantity > product.stock) {
+        throw new HttpException(
+          `Produto ${product.name} não possui estoque suficiente. Você tentou adicionar ${quantity}, mas apenas ${product.stock} estão disponíveis.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (quantity === product.stock) {
+        await this.prisma.products.update({
+          where: { id: product.id },
+          data: { isLocked: true },
+        });
+      }
+
       total += product.price * quantity;
-      return { ...product, quantity };
-    });
+      productQuantity.push({ ...product, quantity });
+    }
 
     const sessionId = '';
     const paymentId = '';

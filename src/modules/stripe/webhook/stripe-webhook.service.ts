@@ -82,7 +82,52 @@ export class StripeWebhookService {
 
         case 'checkout.session.expired':
           const expiredSession = event.data.object as Stripe.Checkout.Session;
-          console.warn(`Sessão de pagamento expirada: ${expiredSession.id}`);
+
+          const userId = expiredSession.metadata.userId;
+
+          if (!userId) {
+            console.warn(
+              `Nenhum usuário associado à sessão expirada: ${expiredSession.id}`,
+            );
+            break;
+          }
+
+          const cart = await this.prisma.carts.findFirst({
+            where: {
+              userId,
+              status: 'PENDENTE',
+            },
+          });
+
+          if (!cart) {
+            console.warn(
+              `Nenhum carrinho pendente encontrado para o usuário: ${userId}`,
+            );
+            break;
+          }
+
+          const cartItems = await this.prisma.cartItems.findMany({
+            where: { cartId: cart.id },
+            include: { products: true },
+          });
+
+          if (cartItems.length === 0) {
+            console.warn(
+              `Nenhum item de carrinho encontrado para o cartId: ${cart.id}`,
+            );
+            break;
+          }
+
+          const productIdsToUnlock = cartItems.map((item) => item.products.id);
+
+          await this.prisma.products.updateMany({
+            where: { id: { in: productIdsToUnlock } },
+            data: { isLocked: false },
+          });
+
+          console.warn(
+            `Produtos desbloqueados após a expiração da sessão: ${expiredSession.id}`,
+          );
           break;
 
         default:

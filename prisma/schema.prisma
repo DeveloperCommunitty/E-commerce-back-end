@@ -107,6 +107,7 @@ model Products {
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
   CartItems     CartItems[]
+  isLocked      Boolean       @default(false) @map("is_locked")
 
   @@map("products")
 }
