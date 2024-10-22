@@ -2,6 +2,7 @@ import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateProfileDto } from './dto/perfil.create.dto';
 import { UpdateProfileDto } from './dto/perfil.update.dto';
 import { PrismaService } from 'src/database/PrismaService';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class PerfilService {
@@ -46,8 +47,13 @@ export class PerfilService {
     return profileCreate;
   }
 
-  async findAll() {
+  async findAll(paginationDto: PaginationDto) {
+    const { page, pageSize } = paginationDto;
+    const offset = (page - 1) * pageSize;
+
     const allProfiles = await this.prisma.profiles.findMany({
+      skip: offset,
+      take: pageSize,
       orderBy: {
         id: 'desc',
       },
@@ -69,7 +75,14 @@ export class PerfilService {
         HttpStatus.EXPECTATION_FAILED,
       );
 
-    return allProfiles;
+      const totalProfiles = await this.prisma.profiles.count();
+
+
+    return {
+      data:allProfiles,
+      totalPages: Math.ceil(totalProfiles / pageSize),
+      currentPage: page,
+    }
   }
 
   async findOne(id: string) {

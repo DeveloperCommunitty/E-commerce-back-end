@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CreateProfileDto } from './dto/perfil.create.dto';
 import { PerfilService } from './perfil.service';
@@ -13,9 +14,11 @@ import { UpdateProfileDto } from './dto/perfil.update.dto';
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Perfil')
 @Controller('perfil')
@@ -39,9 +42,11 @@ export class PerfilController {
   @ApiResponse({ status: 200 })
   @ApiResponse({ status: 417, description: `Erro ao listar perfis` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
+  @ApiQuery({ name: 'page', required: false, description: 'Número da página (opcional, padrão: 1)', type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, description: 'Quantidade de itens por página (opcional, padrão: 10)', type: Number })
   @ApiBearerAuth('access_token')
-  findAll() {
-    return this.profile.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.profile.findAll(paginationDto);
   }
 
   @Get(':id')

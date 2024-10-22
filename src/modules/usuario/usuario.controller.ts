@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -12,12 +13,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { CloudinaryStorageConfig } from 'src/cloudinary/Multer.config';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 import { UsuarioService } from './usuario.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Usuarios')
 @Controller('usuario')
@@ -29,9 +32,11 @@ export class UsuarioController {
   @ApiResponse({ status: 200 })
   @ApiResponse({ status: 417, description: `Nenhum usuário encontrado` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
+  @ApiQuery({ name: 'page', required: false, description: 'Número da página (opcional, padrão: 1)', type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, description: 'Quantidade de itens por página (opcional, padrão: 10)', type: Number })
   @ApiBearerAuth('access_token')
-  findAll() {
-    return this.usuario.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.usuario.findAll(paginationDto);
   }
 
   @Get(':id')

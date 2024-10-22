@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { CreateAddressDto } from './dto/endereco.create.dto';
 import { EnderecoService } from './endereco.service';
@@ -16,7 +17,9 @@ import {
   ApiResponse,
   ApiBody,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Endereço')
 @Controller('endereco')
@@ -45,9 +48,11 @@ export class EnderecoController {
     description: 'Erro ao listar endereços',
   })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
+  @ApiQuery({ name: 'page', required: false, description: 'Número da página (opcional, padrão: 1)', type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, description: 'Quantidade de itens por página (opcional, padrão: 10)', type: Number })
   @ApiBearerAuth('access_token')
-  findAll(@Param('userId') userId: string) {
-    return this.enderecoService.findAll(userId);
+  findAll(@Query() paginationDto: PaginationDto, @Param('userId') userId: string) {
+    return this.enderecoService.findAll(userId, paginationDto);
   }
 
   @Get(':id')

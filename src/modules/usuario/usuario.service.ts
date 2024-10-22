@@ -9,6 +9,7 @@ import { randomInt } from 'node:crypto';
 import { PrismaService } from '../../database/PrismaService';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 import { v2 as cloudinary } from 'cloudinary';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class UsuarioService {
@@ -58,8 +59,13 @@ export class UsuarioService {
     return user;
   }
 
-  async findAll() {
+  async findAll(paginationDto: PaginationDto) {
+    const { page, pageSize } = paginationDto;
+    const offset = (page - 1) * pageSize;
+
     const allUsers = await this.prisma.user.findMany({
+      skip: offset,
+      take: pageSize,
       select: {
         id: true,
         email: true,
@@ -74,7 +80,13 @@ export class UsuarioService {
         HttpStatus.EXPECTATION_FAILED,
       );
 
-    return allUsers;
+    const totalUsers = await this.prisma.user.count();
+
+    return {
+      data: allUsers,
+      totalPages: Math.ceil(totalUsers / pageSize),
+      currentPage: page,
+    }
   }
 
   async update(id: string, body: UpdateUsuarioDto, file: Express.Multer.File) {
