@@ -2,7 +2,9 @@ import { Controller, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Public } from 'src/auth/skipAuth/skipAuth';
 import { StripeWebhookService } from './stripe-webhook.service';
+import { ApiExcludeController } from '@nestjs/swagger';
 
+@ApiExcludeController()
 @Controller('webhook')
 export class StripeWebhookController {
   constructor(private readonly stripeWebhookService: StripeWebhookService) {}
