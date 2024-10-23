@@ -13,12 +13,14 @@ import { EnderecoModule } from './modules/endereco/endereco.module';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { ConfigModule } from '@nestjs/config';
 import { CartModule } from './modules/cart/cart.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     UsuarioModule,
     CadastroModule,
     PerfilModule,

@@ -108,6 +108,8 @@ model Products {
   updatedAt     DateTime      @updatedAt @map("updated_at")
   CartItems     CartItems[]
   isLocked      Boolean       @default(false) @map("is_locked")
+  lockedAt      DateTime?     @map("locked_at")
+  lockDuration  Int?          @map("lock_duration")
 
   @@map("products")
 }
