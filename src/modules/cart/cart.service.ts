@@ -141,40 +141,40 @@ export class CartService {
     return cart;
   }
 
-  @Cron('*/15 * * * *')
-  async unlockExpiredProducts() {
-    const now = new Date();
-    console.log(now);
+  // @Cron('*/15 * * * *')
+  // async unlockExpiredProducts() {
+  //   const now = new Date();
+  //   console.log(now);
 
-    const expiredLockedProducts = await this.prisma.products.findMany({
-      where: {
-        isLocked: true,
-        lockedAt: {
-          not: null,
-        },
-        lockDuration: {
-          not: null,
-        },
-      },
-    });
+  //   const expiredLockedProducts = await this.prisma.products.findMany({
+  //     where: {
+  //       isLocked: true,
+  //       lockedAt: {
+  //         not: null,
+  //       },
+  //       lockDuration: {
+  //         not: null,
+  //       },
+  //     },
+  //   });
 
-    for (const product of expiredLockedProducts) {
-      const lockExpirationTime = new Date(
-        product.lockedAt.getTime() + product.lockDuration * 60000,
-      );
+  //   for (const product of expiredLockedProducts) {
+  //     const lockExpirationTime = new Date(
+  //       product.lockedAt.getTime() + product.lockDuration * 60000,
+  //     );
 
-      if (now > lockExpirationTime) {
-        await this.prisma.products.update({
-          where: { id: product.id },
-          data: {
-            isLocked: false,
-            lockedAt: null,
-            lockDuration: null,
-          },
-        });
-      }
-    }
-  }
+  //     if (now > lockExpirationTime) {
+  //       await this.prisma.products.update({
+  //         where: { id: product.id },
+  //         data: {
+  //           isLocked: false,
+  //           lockedAt: null,
+  //           lockDuration: null,
+  //         },
+  //       });
+  //     }
+  //   }
+  // }
 
   async findAllUsers() {
     const carts = await this.prisma.carts.findMany({
