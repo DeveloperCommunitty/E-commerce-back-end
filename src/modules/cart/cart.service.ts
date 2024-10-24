@@ -2,6 +2,7 @@ import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
 import { CreateCartDTO } from './dto/cart.create.dto';
 import { Cron } from '@nestjs/schedule';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class CartService {
@@ -176,8 +177,13 @@ export class CartService {
     }
   }
 
-  async findAllUsers() {
+  async findAllUsers(paginationDto: PaginationDto) {
+    const { page, pageSize } = paginationDto;
+    const offset = (page - 1) * pageSize;
+
     const carts = await this.prisma.carts.findMany({
+      skip: offset,
+      take: pageSize,
       orderBy: {
         id: 'desc',
       },
@@ -195,7 +201,14 @@ export class CartService {
         'Erro ao listar carrinhos',
         HttpStatus.BAD_REQUEST,
       );
-    return carts;
+
+    const totalCarts = await this.prisma.carts.count();
+
+    return {
+      data: carts,
+      totalPages: Math.ceil(totalCarts / pageSize),
+      currentPage: page,
+    };
   }
 
   async update(id: string) {

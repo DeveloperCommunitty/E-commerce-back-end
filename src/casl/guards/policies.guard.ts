@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { CaslAbilityFactory } from '../casl-ability.factory/casl-ability.factory'; 
 import { PolicyHandler } from './policies.handler';
@@ -22,9 +22,19 @@ export class PoliciesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
     const ability = this.caslAbilityFactory.createForUser(user);
 
-    return policyHandlers.every((handler) =>
+    const allPoliciesValid = policyHandlers.every((handler) =>
       this.execPolicyHandler(handler, ability),
     );
+    
+    if (!allPoliciesValid) {
+      throw new ForbiddenException({
+        statusCode: 403,
+        message: 'Você não tem permissão para acessar este recurso.',
+        error: 'Acesso restrito',
+      });
+    }
+
+    return allPoliciesValid;
   }
 
   private execPolicyHandler(handler: PolicyHandler, ability: AppAbility) {
