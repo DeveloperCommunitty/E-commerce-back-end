@@ -10,10 +10,17 @@ import { ProdutosModule } from './modules/produtos/produtos.module';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { EnderecoModule } from './modules/endereco/endereco.module';
+import { StripeModule } from './modules/stripe/stripe.module';
+import { ConfigModule } from '@nestjs/config';
 import { CartModule } from './modules/cart/cart.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    ScheduleModule.forRoot(),
     UsuarioModule,
     CadastroModule,
     PerfilModule,
@@ -22,6 +29,7 @@ import { CartModule } from './modules/cart/cart.module';
     CaslModule,
     CloudinaryModule,
     EnderecoModule,
+    StripeModule,
     CartModule,
   ],
   providers: [
@@ -31,5 +39,6 @@ import { CartModule } from './modules/cart/cart.module';
     },
     CloudinaryService,
   ],
+  controllers: [],
 })
 export class AppModule {}

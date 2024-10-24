@@ -33,7 +33,7 @@ import { UpdateProductsDto } from './dto/produtos.update.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PoliciesGuard } from 'src/casl/guards/policies.guard';
 
-@ApiTags('Produto')
+@ApiTags('Produtos')
 @Controller('produtos')
 @UseGuards(PoliciesGuard) 
 export class ProdutosController {

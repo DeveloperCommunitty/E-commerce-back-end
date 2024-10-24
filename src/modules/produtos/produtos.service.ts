@@ -129,7 +129,7 @@ export class ProdutosService {
     body: UpdateProductsDto,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    const { name, description, price, stock, sku } = body;
+    const { name, description, price, stock, sku, statusEstoque } = body;
 
     const existsProduct = await this.prisma.products.findUnique({
       where: { id },
@@ -181,6 +181,7 @@ export class ProdutosService {
           description,
           price,
           stock,
+          statusEstoque,
           sku,
           imagemUrl: imageResults
             .map((element: { url: any }) => element.url)
@@ -208,6 +209,7 @@ export class ProdutosService {
           description,
           price,
           stock,
+          statusEstoque,
           sku,
         },
       });

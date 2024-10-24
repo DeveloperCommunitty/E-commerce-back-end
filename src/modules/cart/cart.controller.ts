@@ -25,7 +25,7 @@ import {
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PoliciesGuard } from 'src/casl/guards/policies.guard';
 
-@ApiTags('Carrinho')
+@ApiTags('Carrinhos')
 @Controller('carrinhos')
 @UseGuards(PoliciesGuard) 
 export class CartController {

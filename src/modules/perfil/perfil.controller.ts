@@ -25,35 +25,46 @@ import { CheckPolicies } from 'src/casl/guards/policies.check';
 import { Action } from 'src/casl/casl-ability.factory/actionDto/casl-action.dto';
 import { PoliciesGuard } from 'src/casl/guards/policies.guard';
 
-@ApiTags('Perfil')
-@Controller('perfil')
-@UseGuards(PoliciesGuard) 
+@ApiTags('Perfis')
+@Controller('perfis')
+@UseGuards(PoliciesGuard)
 export class PerfilController {
   constructor(private profile: PerfilService) {}
 
   @Post()
   @ApiOperation({ summary: 'Cria um perfil para o usuário' })
-  @ApiResponse({ status: 200 })
-  @ApiResponse({ status: 400, description: `Cpf já está sendo usado` })
+  @ApiResponse({ status: 200, description: 'Perfil criado com sucesso.' })
+  @ApiResponse({ status: 409, description: `Cpf já está sendo usado` })
   @ApiResponse({ status: 404, description: `Usuário inexistente` })
-  @ApiResponse({ status: 417, description: `Erro ao criar perfil` })
+  @ApiResponse({ status: 400, description: `Erro ao criar perfil` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
   create(@Body() body: CreateProfileDto) {
     return this.profile.create(body);
   }
-  
-  @Get('perfis')
+
+  @Get()
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Admin, 'all'))
-  @ApiOperation({ summary: 'Lista perfis',
+  @ApiOperation({
+    summary: 'Lista perfis',
     description: 'Disponível somente para Administrador',
   })
-  @ApiResponse({ status: 200 })
-  @ApiResponse({ status: 417, description: `Erro ao listar perfis` })
+  @ApiResponse({ status: 200, description: 'Usuario Listado com sucesso.' })
+  @ApiResponse({ status: 400, description: `Erro ao listar perfis` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
-  @ApiQuery({ name: 'page', required: false, description: 'Número da página (opcional, padrão: 1)', type: Number })
-  @ApiQuery({ name: 'pageSize', required: false, description: 'Quantidade de itens por página (opcional, padrão: 10)', type: Number })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Número da página (opcional, padrão: 1)',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: 'Quantidade de itens por página (opcional, padrão: 10)',
+    type: Number,
+  })
   @ApiBearerAuth('access_token')
   findAll(@Query() paginationDto: PaginationDto) {
     return this.profile.findAll(paginationDto);
@@ -61,7 +72,7 @@ export class PerfilController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Lista um perfil pelo id' })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: 'Listado com sucesso.' })
   @ApiResponse({ status: 404, description: `Perfil inexistente` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
@@ -72,9 +83,9 @@ export class PerfilController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Atualiza dados de um perfil' })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: 'Atualizado com sucesso.' })
   @ApiResponse({ status: 404, description: `Perfil ou Usuário inexistente` })
-  @ApiResponse({ status: 417, description: `Erro ao atualizar perfil` })
+  @ApiResponse({ status: 400, description: `Erro ao atualizar perfil` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
@@ -86,7 +97,7 @@ export class PerfilController {
   @ApiOperation({ summary: 'Deleta um perfil' })
   @ApiResponse({ status: 204, description: `Perfil deletado com sucesso` })
   @ApiResponse({ status: 404, description: `Perfil inexistente` })
-  @ApiResponse({ status: 417, description: `Erro ao deletar perfil` })
+  @ApiResponse({ status: 400, description: `Erro ao deletar perfil` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))

@@ -28,20 +28,28 @@ import { Action } from 'src/casl/casl-ability.factory/actionDto/casl-action.dto'
 import { PoliciesGuard } from 'src/casl/guards/policies.guard';
 
 @ApiTags('Usuarios')
-@Controller('usuario')
-@UseGuards(PoliciesGuard) 
+@Controller('usuarios')
+@UseGuards(PoliciesGuard)
 export class UsuarioController {
   constructor(private usuario: UsuarioService) {}
 
-  @Get('usuarios')
-  @ApiOperation({ summary: 'Lista todos os usuários',
-    description: 'Disponível somente para Administrador',
-   })
-  @ApiResponse({ status: 200 })
+  @Get()
+  @ApiOperation({ summary: 'Lista todos os usuários' })
+  @ApiResponse({ status: 200, description: `Usuários listado com sucesso.` })
   @ApiResponse({ status: 404, description: `Nenhum usuário encontrado` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
-  @ApiQuery({ name: 'page', required: false, description: 'Número da página (opcional, padrão: 1)', type: Number })
-  @ApiQuery({ name: 'pageSize', required: false, description: 'Quantidade de itens por página (opcional, padrão: 10)', type: Number })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Número da página (opcional, padrão: 1)',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: 'Quantidade de itens por página (opcional, padrão: 10)',
+    type: Number,
+  })
   @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Admin, 'all'))
   findAll(@Query() paginationDto: PaginationDto) {
@@ -50,13 +58,14 @@ export class UsuarioController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Lista um usuário por id' })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: `Usuário listado com sucesso.` })
   @ApiResponse({ status: 404, description: `Usuário não encontrado` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
-  findOne(@Param('id') id: string) {
-    return this.usuario.findOne(id);
+  findOne(@Param('id') id: string, @Query('page') page: string) {
+    const pageNumber = page ? parseInt(page, 10) : 1;
+    return this.usuario.findOne(id, pageNumber);
   }
 
   @Patch(':id')

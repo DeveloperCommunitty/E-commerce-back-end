@@ -1,12 +1,7 @@
-import {
-  Body,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  Param,
-} from '@nestjs/common';
+import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
 import { CreateCartDTO } from './dto/cart.create.dto';
+import { Cron } from '@nestjs/schedule';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
@@ -21,16 +16,71 @@ export class CartService {
     });
 
     if (productsByDatabase.length === 0) {
-      throw new Error('Nenhum produto encontrado');
+      throw new HttpException(
+        'Nenhum produto encontrado',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     let total = 0;
-    const productQuantity = productsByDatabase.map((product) => {
+    const productQuantity = [];
+
+    for (const product of productsByDatabase) {
       const quantity =
         products.find((p) => p.productId === product.id)?.quantity || 0;
+
+      if (product.isLocked) {
+        const lockExpired =
+          product.lockedAt && product.lockDuration
+            ? new Date() >
+              new Date(
+                product.lockedAt.getTime() + product.lockDuration * 60000,
+              )
+            : false;
+
+        if (!lockExpired) {
+          throw new HttpException(
+            `Produto ${product.name} está temporariamente indisponível para adição ao carrinho. Por favor, tente novamente mais tarde.`,
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        await this.prisma.products.update({
+          where: { id: product.id },
+          data: { isLocked: false, lockedAt: null, lockDuration: null },
+        });
+      }
+
+      if (product.stock === 0) {
+        throw new HttpException(
+          `Produto ${product.name} está esgotado.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (quantity > product.stock) {
+        throw new HttpException(
+          `Produto ${product.name} não possui estoque suficiente. Você tentou adicionar ${quantity}, mas apenas ${product.stock} estão disponíveis.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (quantity === product.stock) {
+        const lockDurationInMinutes = 60;
+
+        await this.prisma.products.update({
+          where: { id: product.id },
+          data: {
+            isLocked: true,
+            lockedAt: new Date(),
+            lockDuration: lockDurationInMinutes,
+          },
+        });
+      }
+
       total += product.price * quantity;
-      return { ...product, quantity };
-    });
+      productQuantity.push({ ...product, quantity });
+    }
 
     const sessionId = '';
     const paymentId = '';
@@ -92,6 +142,41 @@ export class CartService {
     return cart;
   }
 
+  @Cron('*/5 * * * *')
+  async unlockExpiredProducts() {
+    const now = new Date();
+    console.log(now);
+
+    const expiredLockedProducts = await this.prisma.products.findMany({
+      where: {
+        isLocked: true,
+        lockedAt: {
+          not: null,
+        },
+        lockDuration: {
+          not: null,
+        },
+      },
+    });
+
+    for (const product of expiredLockedProducts) {
+      const lockExpirationTime = new Date(
+        product.lockedAt.getTime() + product.lockDuration * 60000,
+      );
+
+      if (now > lockExpirationTime) {
+        await this.prisma.products.update({
+          where: { id: product.id },
+          data: {
+            isLocked: false,
+            lockedAt: null,
+            lockDuration: null,
+          },
+        });
+      }
+    }
+  }
+
   async findAllUsers(paginationDto: PaginationDto) {
     const { page, pageSize } = paginationDto;
     const offset = (page - 1) * pageSize;
@@ -123,7 +208,7 @@ export class CartService {
       data: carts,
       totalPages: Math.ceil(totalCarts / pageSize),
       currentPage: page,
-    }
+    };
   }
 
   async update(id: string) {

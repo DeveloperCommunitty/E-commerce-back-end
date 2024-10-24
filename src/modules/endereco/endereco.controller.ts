@@ -26,18 +26,18 @@ import { AppAbility } from 'src/casl/casl-ability.factory/casl-ability.factory';
 import { Action } from 'src/casl/casl-ability.factory/actionDto/casl-action.dto';
 import { PoliciesGuard } from 'src/casl/guards/policies.guard';
 
-@ApiTags('Endereço')
-@Controller('endereco')
-@UseGuards(PoliciesGuard) 
+@ApiTags('Endereços')
+@Controller('enderecos')
+@UseGuards(PoliciesGuard)
 export class EnderecoController {
   constructor(private enderecoService: EnderecoService) {}
 
   @Post()
   @ApiOperation({ summary: 'Criar um novo endereço' })
   @ApiBody({ type: CreateAddressDto })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: 'Endereço criado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Usuário inexistente' })
-  @ApiResponse({ status: 417, description: 'Erro ao criar endereço' })
+  @ApiResponse({ status: 400, description: 'Erro ao criar endereço' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
@@ -45,27 +45,41 @@ export class EnderecoController {
     return this.enderecoService.create(body);
   }
 
-  @Get('enderecos/:userid')
+  @Get(':userid')
   @ApiOperation({ summary: 'Obter todos os endereços de um usuário' })
   @ApiResponse({
     status: 200,
+    description: 'Endereços listados com sucesso.',
   })
   @ApiResponse({
-    status: 417,
+    status: 400,
     description: 'Erro ao listar endereços',
   })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
-  @ApiQuery({ name: 'page', required: false, description: 'Número da página (opcional, padrão: 1)', type: Number })
-  @ApiQuery({ name: 'pageSize', required: false, description: 'Quantidade de itens por página (opcional, padrão: 10)', type: Number })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Número da página (opcional, padrão: 1)',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: 'Quantidade de itens por página (opcional, padrão: 10)',
+    type: Number,
+  })
   @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
-  findAll(@Query() paginationDto: PaginationDto, @Param('userId') userId: string) {
+  findAll(
+    @Query() paginationDto: PaginationDto,
+    @Param('userId') userId: string,
+  ) {
     return this.enderecoService.findAll(userId, paginationDto);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Obter um endereço pelo id' })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: 'Endereço listado com sucesso.' })
   @ApiResponse({ status: 404, description: `Endereço inexistente` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
@@ -77,9 +91,9 @@ export class EnderecoController {
   @Patch(':id')
   @ApiOperation({ summary: 'Atualizar um endereço pelo id' })
   @ApiBody({ type: UpdateAddressDto })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: 'Endereço atualizado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Endereço inexistente' })
-  @ApiResponse({ status: 417, description: 'Erro ao atualizar endereço' })
+  @ApiResponse({ status: 400, description: 'Erro ao atualizar endereço' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
