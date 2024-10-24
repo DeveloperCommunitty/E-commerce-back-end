@@ -40,8 +40,11 @@ async function bootstrap() {
     .addTag('Login')
     .addTag('Cadastrar')
     .addTag('Usuarios')
-    .addTag('Perfil')
-    .addTag('Carrinho')
+    .addTag('Perfis')
+    .addTag('Endereços')
+    .addTag('Produtos')
+    .addTag('Carrinhos')
+    .addTag('Pagamentos')
     .build();
   const document = SwaggerModule.createDocument(app, config);
 

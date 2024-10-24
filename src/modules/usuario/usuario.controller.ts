@@ -21,13 +21,13 @@ import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 import { UsuarioService } from './usuario.service';
 
 @ApiTags('Usuarios')
-@Controller('usuario')
+@Controller('usuarios')
 export class UsuarioController {
   constructor(private usuario: UsuarioService) {}
 
-  @Get('usuarios')
+  @Get()
   @ApiOperation({ summary: 'Lista todos os usuários' })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: `Usuários listado com sucesso.` })
   @ApiResponse({ status: 404, description: `Nenhum usuário encontrado` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
@@ -37,7 +37,7 @@ export class UsuarioController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Lista um usuário por id' })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: `Usuário listado com sucesso.` })
   @ApiResponse({ status: 404, description: `Usuário não encontrado` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')

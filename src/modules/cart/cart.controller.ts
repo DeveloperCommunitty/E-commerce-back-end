@@ -20,7 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-@ApiTags('Carrinho')
+@ApiTags('Carrinhos')
 @Controller('carrinhos')
 export class CartController {
   constructor(private readonly cartService: CartService) {}

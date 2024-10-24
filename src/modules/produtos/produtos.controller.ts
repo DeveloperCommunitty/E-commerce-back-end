@@ -28,7 +28,7 @@ import { CloudinaryStorageConfig } from 'src/cloudinary/Multer.config';
 import { Public } from 'src/auth/skipAuth/skipAuth';
 import { UpdateProductsDto } from './dto/produtos.update.dto';
 
-@ApiTags('Produto')
+@ApiTags('Produtos')
 @Controller('produtos')
 export class ProdutosController {
   constructor(private readonly productsService: ProdutosService) {}

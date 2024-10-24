@@ -17,27 +17,27 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-@ApiTags('Perfil')
-@Controller('perfil')
+@ApiTags('Perfis')
+@Controller('perfis')
 export class PerfilController {
   constructor(private profile: PerfilService) {}
 
   @Post()
   @ApiOperation({ summary: 'Cria um perfil para o usuário' })
-  @ApiResponse({ status: 200 })
-  @ApiResponse({ status: 400, description: `Cpf já está sendo usado` })
+  @ApiResponse({ status: 200, description: 'Perfil criado com sucesso.' })
+  @ApiResponse({ status: 409, description: `Cpf já está sendo usado` })
   @ApiResponse({ status: 404, description: `Usuário inexistente` })
-  @ApiResponse({ status: 417, description: `Erro ao criar perfil` })
+  @ApiResponse({ status: 400, description: `Erro ao criar perfil` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
   create(@Body() body: CreateProfileDto) {
     return this.profile.create(body);
   }
 
-  @Get('perfis')
+  @Get()
   @ApiOperation({ summary: 'Lista perfis' })
-  @ApiResponse({ status: 200 })
-  @ApiResponse({ status: 417, description: `Erro ao listar perfis` })
+  @ApiResponse({ status: 200, description: 'Usuario Listado com sucesso.' })
+  @ApiResponse({ status: 400, description: `Erro ao listar perfis` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
   findAll() {
@@ -46,7 +46,7 @@ export class PerfilController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Lista um perfil pelo id' })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: 'Listado com sucesso.' })
   @ApiResponse({ status: 404, description: `Perfil inexistente` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
@@ -56,9 +56,9 @@ export class PerfilController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Atualiza dados de um perfil' })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: 'Atualizado com sucesso.' })
   @ApiResponse({ status: 404, description: `Perfil ou Usuário inexistente` })
-  @ApiResponse({ status: 417, description: `Erro ao atualizar perfil` })
+  @ApiResponse({ status: 400, description: `Erro ao atualizar perfil` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
   update(@Param('id') id: string, @Body() body: UpdateProfileDto) {
@@ -69,7 +69,7 @@ export class PerfilController {
   @ApiOperation({ summary: 'Deleta um perfil' })
   @ApiResponse({ status: 204, description: `Perfil deletado com sucesso` })
   @ApiResponse({ status: 404, description: `Perfil inexistente` })
-  @ApiResponse({ status: 417, description: `Erro ao deletar perfil` })
+  @ApiResponse({ status: 400, description: `Erro ao deletar perfil` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
   remove(@Param('id') id: string) {

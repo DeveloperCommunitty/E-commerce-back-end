@@ -18,30 +18,31 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 
-@ApiTags('Endereço')
-@Controller('endereco')
+@ApiTags('Endereços')
+@Controller('enderecos')
 export class EnderecoController {
   constructor(private enderecoService: EnderecoService) {}
 
   @Post()
   @ApiOperation({ summary: 'Criar um novo endereço' })
   @ApiBody({ type: CreateAddressDto })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: 'Endereço criado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Usuário inexistente' })
-  @ApiResponse({ status: 417, description: 'Erro ao criar endereço' })
+  @ApiResponse({ status: 400, description: 'Erro ao criar endereço' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
   create(@Body() body: CreateAddressDto) {
     return this.enderecoService.create(body);
   }
 
-  @Get('enderecos/:userid')
+  @Get(':userid')
   @ApiOperation({ summary: 'Obter todos os endereços de um usuário' })
   @ApiResponse({
     status: 200,
+    description: 'Endereços listados com sucesso.',
   })
   @ApiResponse({
-    status: 417,
+    status: 400,
     description: 'Erro ao listar endereços',
   })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
@@ -52,7 +53,7 @@ export class EnderecoController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Obter um endereço pelo id' })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: 'Endereço listado com sucesso.' })
   @ApiResponse({ status: 404, description: `Endereço inexistente` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
@@ -63,9 +64,9 @@ export class EnderecoController {
   @Patch(':id')
   @ApiOperation({ summary: 'Atualizar um endereço pelo id' })
   @ApiBody({ type: UpdateAddressDto })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, description: 'Endereço atualizado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Endereço inexistente' })
-  @ApiResponse({ status: 417, description: 'Erro ao atualizar endereço' })
+  @ApiResponse({ status: 400, description: 'Erro ao atualizar endereço' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
   update(@Param('id') id: string, @Body() body: UpdateAddressDto) {
