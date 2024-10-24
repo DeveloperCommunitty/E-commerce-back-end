@@ -2,6 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
 import { CreateAddressDto } from './dto/endereco.create.dto';
 import { UpdateAddressDto } from './dto/endereco.update.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class EnderecoService {
@@ -45,8 +46,13 @@ export class EnderecoService {
     return addressCreate;
   }
 
-  async findAll(userId: string) {
+  async findAll(userId: string, paginationDto: PaginationDto) {
+    const { page, pageSize } = paginationDto;
+    const offset = (page - 1) * pageSize;
+
     const addresses = await this.prisma.address.findMany({
+      skip: offset,
+      take: pageSize,
       where: { userId },
       select: {
         id: true,
@@ -66,8 +72,14 @@ export class EnderecoService {
         `Erro ao listar endereços`,
         HttpStatus.EXPECTATION_FAILED,
       );
+    
+    const totalAddress = await this.prisma.address.count();
 
-    return addresses;
+    return {
+      data: addresses,
+      totalPages: Math.ceil(totalAddress / pageSize),
+      currentPage: page,
+    } 
   }
 
   async findOne(id: string) {

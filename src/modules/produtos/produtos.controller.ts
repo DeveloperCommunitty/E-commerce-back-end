@@ -6,7 +6,9 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ProdutosService } from './produtos.service';
@@ -19,6 +21,7 @@ import {
   ApiConsumes,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -27,23 +30,19 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { CloudinaryStorageConfig } from 'src/cloudinary/Multer.config';
 import { Public } from 'src/auth/skipAuth/skipAuth';
 import { UpdateProductsDto } from './dto/produtos.update.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PoliciesGuard } from 'src/casl/guards/policies.guard';
 
 @ApiTags('Produto')
 @Controller('produtos')
+@UseGuards(PoliciesGuard) 
 export class ProdutosController {
   constructor(private readonly productsService: ProdutosService) {}
 
   @Post()
   @ApiBearerAuth('access_token')
-  @ApiResponse({
-    status: 200,
-    description: 'Produto criado com sucesso.',
-    type: ProductsDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Nenhum arquivo enviado ou produto existente',
-  })
+  @ApiResponse({status: 200,description: 'Produto criado com sucesso.',type: ProductsDto,})
+  @ApiResponse({status: 404,description: 'Nenhum arquivo enviado ou produto existente',})
   @ApiResponse({ status: 409, description: 'O produto ou o código já existe' })
   @ApiResponse({ status: 400, description: 'Dados inválidos ou faltando' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
@@ -59,20 +58,11 @@ export class ProdutosController {
       },
     }),
   )
-  @ApiOperation({
-    summary: 'Cria produto',
-    description: 'Disponível apenas para Admin.',
-  })
+  @ApiOperation({summary: 'Cria produto',description: 'Disponível apenas para Admin.', })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Dados do produto com imagem',
-    type: ProductsDto,
-  })
+  @ApiBody({ description: 'Dados do produto com imagem',type: ProductsDto, })
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Admin, 'all'))
-  create(
-    @Body() body: ProductsDto,
-    @UploadedFiles() files: Express.Multer.File[],
-  ) {
+  create(@Body() body: ProductsDto, @UploadedFiles() files: Express.Multer.File[]) {
     return this.productsService.create(body, files);
   }
 
@@ -81,9 +71,12 @@ export class ProdutosController {
   @ApiResponse({ status: 200, description: 'Produto encontrado com sucesso.' })
   @ApiResponse({ status: 404, description: 'Erro ao listar produtos' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
+  @ApiQuery({ name: 'page', required: false, description: 'Número da página (opcional, padrão: 1)', type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, description: 'Quantidade de itens por página (opcional, padrão: 10)', type: Number })
   @Get()
-  findAll() {
-    return this.productsService.findAll();
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.productsService.findAll(paginationDto);
   }
 
   @ApiOperation({ summary: 'Lista produto por Id' })
@@ -93,6 +86,7 @@ export class ProdutosController {
   @ApiResponse({ status: 404, description: 'Produto inexistente' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @Get(':id')
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
   }
@@ -115,15 +109,8 @@ export class ProdutosController {
       'Disponível apenas para Admin. Atualização da imagem é opcional.',
   })
   @ApiParam({ name: 'id', description: 'Id do produto' })
-  @ApiResponse({
-    status: 200,
-    description: 'Produto atualizado com sucesso.',
-    type: UpdateProductsDto,
-  })
-  @ApiResponse({
-    status: 409,
-    description: 'Nome do produto já está cadastrado',
-  })
+  @ApiResponse({status: 200,description: 'Produto atualizado com sucesso.',type: UpdateProductsDto,})
+  @ApiResponse({status: 409, description: 'Nome do produto já está cadastrado',})
   @ApiResponse({ status: 404, description: 'Produto inexistente' })
   @ApiResponse({ status: 400, description: 'Erro ao atualizar produto' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
@@ -131,27 +118,15 @@ export class ProdutosController {
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Admin, 'all'))
   @Patch(':id')
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Dados do produto com imagem',
-    type: UpdateProductsDto,
-  })
-  update(
-    @Param('id') id: string,
-    @Body() body: UpdateProductsDto,
-    @UploadedFiles() files: Express.Multer.File[],
-  ) {
+  @ApiBody({description: 'Dados do produto com imagem',type: UpdateProductsDto,})
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Admin, 'all'))
+  update(@Param('id') id: string, @Body() body: UpdateProductsDto, @UploadedFiles() files: Express.Multer.File[],) {
     return this.productsService.update(id, body, files);
   }
 
-  @ApiOperation({
-    summary: 'Deleta produto por Id',
-    description: 'Disponível apenas para Admin.',
-  })
+  @ApiOperation({summary: 'Deleta produto por Id', description: 'Disponível apenas para Admin.', })
   @ApiParam({ name: 'id', description: 'Id do produto' })
-  @ApiResponse({
-    status: 204,
-    description: 'Produto deletado com sucesso.',
-  })
+  @ApiResponse({status: 204,description: 'Produto deletado com sucesso.', })
   @ApiResponse({ status: 404, description: 'Produto inexistente' })
   @ApiResponse({ status: 400, description: 'Erro ao deletar produto' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })

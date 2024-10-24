@@ -5,33 +5,47 @@ import {
   Get,
   Param,
   Patch,
+  Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { CloudinaryStorageConfig } from 'src/cloudinary/Multer.config';
 import { UpdateUsuarioDto } from './dto/updateUsuario.dto';
 import { UsuarioService } from './usuario.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { CheckPolicies } from 'src/casl/guards/policies.check';
+import { AppAbility } from 'src/casl/casl-ability.factory/casl-ability.factory';
+import { Action } from 'src/casl/casl-ability.factory/actionDto/casl-action.dto';
+import { PoliciesGuard } from 'src/casl/guards/policies.guard';
 
 @ApiTags('Usuarios')
 @Controller('usuario')
+@UseGuards(PoliciesGuard) 
 export class UsuarioController {
   constructor(private usuario: UsuarioService) {}
 
   @Get('usuarios')
-  @ApiOperation({ summary: 'Lista todos os usuários' })
+  @ApiOperation({ summary: 'Lista todos os usuários',
+    description: 'Disponível somente para Administrador',
+   })
   @ApiResponse({ status: 200 })
   @ApiResponse({ status: 404, description: `Nenhum usuário encontrado` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
+  @ApiQuery({ name: 'page', required: false, description: 'Número da página (opcional, padrão: 1)', type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, description: 'Quantidade de itens por página (opcional, padrão: 10)', type: Number })
   @ApiBearerAuth('access_token')
-  findAll() {
-    return this.usuario.findAll();
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Admin, 'all'))
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.usuario.findAll(paginationDto);
   }
 
   @Get(':id')
@@ -40,6 +54,7 @@ export class UsuarioController {
   @ApiResponse({ status: 404, description: `Usuário não encontrado` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
   findOne(@Param('id') id: string) {
     return this.usuario.findOne(id);
   }
@@ -62,6 +77,7 @@ export class UsuarioController {
   @ApiResponse({ status: 404, description: `Usuário inexistente` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
   update(
     @Param('id') id: string,
     @Body() body: UpdateUsuarioDto,
@@ -75,6 +91,7 @@ export class UsuarioController {
   @ApiResponse({ status: 204, description: `Usuário deletado com sucesso` })
   @ApiResponse({ status: 404, description: `Usuário inexistente` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
   @ApiBearerAuth('access_token')
   remove(@Param('id') id: string) {
     return this.usuario.remove(id);

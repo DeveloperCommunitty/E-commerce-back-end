@@ -9,6 +9,7 @@ import { PrismaService } from 'src/database/PrismaService';
 import { ProductsDto } from './dto/produtos.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { UpdateProductsDto } from './dto/produtos.update.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class ProdutosService {
@@ -90,8 +91,13 @@ export class ProdutosService {
     return product;
   }
 
-  async findAll() {
+  async findAll(paginationDto: PaginationDto) {
+    const { page, pageSize } = paginationDto;
+    const offset = (page - 1) * pageSize;
+
     const productsAll = await this.prisma.products.findMany({
+      skip: offset,
+      take: pageSize,
       select: {
         id: true,
         name: true,
@@ -103,13 +109,19 @@ export class ProdutosService {
       },
     });
 
+    const totalProducts = await this.prisma.products.count();
+
     if (!productsAll)
       throw new HttpException(
         `Erro ao listar produtos`,
         HttpStatus.EXPECTATION_FAILED,
       );
 
-    return productsAll;
+    return {
+        data: productsAll,
+        totalPages: Math.ceil(totalProducts / pageSize),
+        currentPage: page,
+    };
   }
 
   async update(

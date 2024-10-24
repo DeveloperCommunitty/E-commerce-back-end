@@ -6,6 +6,8 @@ import {
   Param,
   Patch,
   Post,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CreateCartDTO } from './dto/cart.create.dto';
@@ -16,12 +18,16 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PoliciesGuard } from 'src/casl/guards/policies.guard';
 
 @ApiTags('Carrinho')
 @Controller('carrinhos')
+@UseGuards(PoliciesGuard) 
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
@@ -48,10 +54,12 @@ export class CartController {
   @ApiResponse({ status: 400, description: 'Erro ao listar carrinhos' })
   @ApiResponse({ status: 401, description: 'Usuário não autorizado' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
+  @ApiQuery({ name: 'page', required: false, description: 'Número da página (opcional, padrão: 1)', type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, description: 'Quantidade de itens por página (opcional, padrão: 10)', type: Number })
   @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.Admin, 'all'))
-  async findAllUsers() {
-    return this.cartService.findAllUsers();
+  async findAllUsers(@Query() paginationDto: PaginationDto) {
+    return this.cartService.findAllUsers(paginationDto);
   }
 
   @Get(':id')
