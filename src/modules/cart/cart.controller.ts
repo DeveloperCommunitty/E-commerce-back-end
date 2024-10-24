@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CreateCartDTO } from './dto/cart.create.dto';
@@ -22,9 +23,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PoliciesGuard } from 'src/casl/guards/policies.guard';
 
 @ApiTags('Carrinho')
 @Controller('carrinhos')
+@UseGuards(PoliciesGuard) 
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 

@@ -7,6 +7,7 @@ import {
   Delete,
   Patch,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateAddressDto } from './dto/endereco.create.dto';
 import { EnderecoService } from './endereco.service';
@@ -20,9 +21,14 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { CheckPolicies } from 'src/casl/guards/policies.check';
+import { AppAbility } from 'src/casl/casl-ability.factory/casl-ability.factory';
+import { Action } from 'src/casl/casl-ability.factory/actionDto/casl-action.dto';
+import { PoliciesGuard } from 'src/casl/guards/policies.guard';
 
 @ApiTags('Endereço')
 @Controller('endereco')
+@UseGuards(PoliciesGuard) 
 export class EnderecoController {
   constructor(private enderecoService: EnderecoService) {}
 
@@ -34,6 +40,7 @@ export class EnderecoController {
   @ApiResponse({ status: 417, description: 'Erro ao criar endereço' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
   create(@Body() body: CreateAddressDto) {
     return this.enderecoService.create(body);
   }
@@ -51,6 +58,7 @@ export class EnderecoController {
   @ApiQuery({ name: 'page', required: false, description: 'Número da página (opcional, padrão: 1)', type: Number })
   @ApiQuery({ name: 'pageSize', required: false, description: 'Quantidade de itens por página (opcional, padrão: 10)', type: Number })
   @ApiBearerAuth('access_token')
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
   findAll(@Query() paginationDto: PaginationDto, @Param('userId') userId: string) {
     return this.enderecoService.findAll(userId, paginationDto);
   }
@@ -61,6 +69,7 @@ export class EnderecoController {
   @ApiResponse({ status: 404, description: `Endereço inexistente` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
   findOne(@Param('id') id: string) {
     return this.enderecoService.findOne(id);
   }
@@ -73,6 +82,7 @@ export class EnderecoController {
   @ApiResponse({ status: 417, description: 'Erro ao atualizar endereço' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
   update(@Param('id') id: string, @Body() body: UpdateAddressDto) {
     return this.enderecoService.update(id, body);
   }
@@ -83,6 +93,7 @@ export class EnderecoController {
   @ApiResponse({ status: 404, description: 'Endereço não encontrado.' })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
   @ApiBearerAuth('access_token')
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
   remove(@Param('id') id: string) {
     return this.enderecoService.remove(id);
   }
