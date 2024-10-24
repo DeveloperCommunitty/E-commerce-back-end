@@ -29,6 +29,19 @@ export class StripeService {
         };
       }
 
+      const outOfStockItems = cartItems.filter(
+        (item) => item.products.stock < item.quantity,
+      );
+      if (outOfStockItems.length > 0) {
+        const outOfStockNames = outOfStockItems
+          .map((item) => item.products.name)
+          .join(', ');
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          message: `Os seguintes produtos estão fora de estoque: ${outOfStockNames}.`,
+        };
+      }
+
       const lineItems = cartItems.map((item) => ({
         price_data: {
           currency: 'brl',

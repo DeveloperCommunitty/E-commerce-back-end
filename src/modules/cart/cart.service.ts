@@ -1,6 +1,7 @@
 import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/PrismaService';
 import { CreateCartDTO } from './dto/cart.create.dto';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class CartService {
@@ -28,10 +29,25 @@ export class CartService {
         products.find((p) => p.productId === product.id)?.quantity || 0;
 
       if (product.isLocked) {
-        throw new HttpException(
-          `Produto ${product.name} está temporariamente indisponível para adição ao carrinho. Por favor, tente novamente mais tarde.`,
-          HttpStatus.BAD_REQUEST,
-        );
+        const lockExpired =
+          product.lockedAt && product.lockDuration
+            ? new Date() >
+              new Date(
+                product.lockedAt.getTime() + product.lockDuration * 60000,
+              )
+            : false;
+
+        if (!lockExpired) {
+          throw new HttpException(
+            `Produto ${product.name} está temporariamente indisponível para adição ao carrinho. Por favor, tente novamente mais tarde.`,
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        await this.prisma.products.update({
+          where: { id: product.id },
+          data: { isLocked: false, lockedAt: null, lockDuration: null },
+        });
       }
 
       if (product.stock === 0) {
@@ -49,9 +65,15 @@ export class CartService {
       }
 
       if (quantity === product.stock) {
+        const lockDurationInMinutes = 60;
+
         await this.prisma.products.update({
           where: { id: product.id },
-          data: { isLocked: true },
+          data: {
+            isLocked: true,
+            lockedAt: new Date(),
+            lockDuration: lockDurationInMinutes,
+          },
         });
       }
 
@@ -117,6 +139,41 @@ export class CartService {
       throw new HttpException('Carrinho não encontrado', HttpStatus.NOT_FOUND);
 
     return cart;
+  }
+
+  @Cron('*/5 * * * *')
+  async unlockExpiredProducts() {
+    const now = new Date();
+    console.log(now);
+
+    const expiredLockedProducts = await this.prisma.products.findMany({
+      where: {
+        isLocked: true,
+        lockedAt: {
+          not: null,
+        },
+        lockDuration: {
+          not: null,
+        },
+      },
+    });
+
+    for (const product of expiredLockedProducts) {
+      const lockExpirationTime = new Date(
+        product.lockedAt.getTime() + product.lockDuration * 60000,
+      );
+
+      if (now > lockExpirationTime) {
+        await this.prisma.products.update({
+          where: { id: product.id },
+          data: {
+            isLocked: false,
+            lockedAt: null,
+            lockDuration: null,
+          },
+        });
+      }
+    }
   }
 
   async findAllUsers() {
