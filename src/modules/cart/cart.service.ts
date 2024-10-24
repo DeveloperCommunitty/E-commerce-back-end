@@ -141,7 +141,7 @@ export class CartService {
     return cart;
   }
 
-  @Cron('*/15 * * * *')
+  @Cron('*/5 * * * *')
   async unlockExpiredProducts() {
     const now = new Date();
     console.log(now);
