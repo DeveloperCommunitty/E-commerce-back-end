@@ -20,7 +20,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    // ScheduleModule.forRoot(),
+    ScheduleModule.forRoot(),
     UsuarioModule,
     CadastroModule,
     PerfilModule,
@@ -29,7 +29,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CaslModule,
     CloudinaryModule,
     EnderecoModule,
-    StripeModule,
+    // StripeModule,
     CartModule,
   ],
   providers: [
