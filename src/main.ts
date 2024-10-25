@@ -21,7 +21,7 @@ async function bootstrap() {
     }),
   );
 
-  app.use('/webhook', bodyParser.raw({ type: 'application/json' }));
+  // app.use('/webhook', bodyParser.raw({ type: 'application/json' }));
 
   const config = new DocumentBuilder()
     .setTitle('API E-Commerce NestJS')
