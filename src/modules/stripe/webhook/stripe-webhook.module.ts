@@ -1,4 +1,3 @@
-// src/webhook/stripe-webhook.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { StripeWebhookController } from './stripe-webhook.controller';

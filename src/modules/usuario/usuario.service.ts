@@ -111,7 +111,7 @@ export class UsuarioService {
       data: allUsers,
       totalPages: Math.ceil(totalUsers / pageSize),
       currentPage: page,
-    }
+    };
   }
 
   async update(id: string, body: UpdateUsuarioDto, file: Express.Multer.File) {
