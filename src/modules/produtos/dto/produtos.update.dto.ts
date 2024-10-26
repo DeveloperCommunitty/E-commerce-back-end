@@ -41,7 +41,7 @@ export class UpdateProductsDto {
   @ApiProperty({
     example: 'DISPONIVEL',
     description: 'Status atual do estoque do produto',
-    enum: StatusEstoque, // Aqui mostramos o enum no Swagger
+    enum: StatusEstoque,
   })
   @IsEnum(StatusEstoque, {
     message:

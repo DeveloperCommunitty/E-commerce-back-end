@@ -61,9 +61,14 @@ export class UsuarioController {
   @ApiResponse({ status: 200, description: `Usuário listado com sucesso.` })
   @ApiResponse({ status: 404, description: `Usuário não encontrado` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Número da página (opcional, padrão: 1)',
+  })
   @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
-  findOne(@Param('id') id: string, @Query('page') page: string) {
+  findOne(@Param('id') id: string, @Query('page') page?: string) {
     const pageNumber = page ? parseInt(page, 10) : 1;
     return this.usuario.findOne(id, pageNumber);
   }

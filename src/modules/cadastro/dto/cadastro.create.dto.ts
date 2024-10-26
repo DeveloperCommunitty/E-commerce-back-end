@@ -16,14 +16,14 @@ export class CadastroDTO {
   email: string;
 
   @ApiProperty({
-    description: 'Nome completo do usuário',
-    example: 'Wesley Santos',
+    description: 'Nome do usuário',
+    example: 'Nina Sebastiana',
   })
   name: string;
 
   @ApiProperty({
     description: 'A senha do usuário. Deve ser forte e segura.',
-    example: 'SenhaForte123!',
+    example: 'cliente123',
   })
   @IsNotEmpty({ message: 'A senha não pode estar vazia.' })
   @MinLength(8, { message: 'A senha deve ter pelo menos 8 caracteres.' })
@@ -31,7 +31,8 @@ export class CadastroDTO {
 
   @ApiProperty({
     description: 'URL do avatar do usuário',
-    example: 'https://example.com/avatar.png',
+    example:
+      'https://res.cloudinary.com/dtk98bty4/image/upload/v1728862716/produtos/wwoedlsoaizy3leknzqg.jpg',
     readOnly: true,
   })
   avatar: string;

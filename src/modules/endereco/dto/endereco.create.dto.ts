@@ -2,12 +2,19 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateAddressDto {
-  @ApiProperty({ example: 'Rua das Flores', description: 'Nome da rua do endereço' })
+  @ApiProperty({
+    example: 'Rua das Flores',
+    description: 'Nome da rua do endereço',
+  })
   @IsNotEmpty()
   @IsString()
   street: string;
 
-  @ApiProperty({ example: 'Centro', description: 'Nome do bairro', required: false })
+  @ApiProperty({
+    example: 'Centro',
+    description: 'Nome do bairro',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   neighbourhood?: string;
@@ -22,17 +29,28 @@ export class CreateAddressDto {
   @IsString()
   zipCode: string;
 
-  @ApiProperty({ example: 'Residencial', description: 'Tipo de local público, como praça ou avenida', required: false })
+  @ApiProperty({
+    example: 'Residencial',
+    description: 'Tipo de local público, como praça ou avenida',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   publicPlace?: string;
 
-  @ApiProperty({ example: '1234', description: 'Número do endereço', required: false })
+  @ApiProperty({
+    example: '1234',
+    description: 'Número do endereço',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   streetNumber?: string;
 
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'ID do usuário correspondente' })
+  @ApiProperty({
+    example: '768c43c7-2a84-4a30-aa37-b4cd3febecaf',
+    description: 'ID do usuário correspondente',
+  })
   @IsNotEmpty()
   userId: string;
 }
