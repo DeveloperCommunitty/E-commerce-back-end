@@ -180,7 +180,7 @@ export class ProdutosService {
           name,
           description,
           price,
-          stock,
+          stock: { increment: stock },
           statusEstoque,
           sku,
           imagemUrl: imageResults
@@ -208,7 +208,7 @@ export class ProdutosService {
           name,
           description,
           price,
-          stock,
+          stock: { increment: stock },
           statusEstoque,
           sku,
         },
