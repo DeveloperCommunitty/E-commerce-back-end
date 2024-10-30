@@ -45,8 +45,8 @@ export class UpdateProductsDto {
   })
   @IsEnum(StatusEstoque, {
     message:
-      'O status deve ser um valor válido: Disponível, Esgotado ou Limitado',
-  }) // Valida o enum
+      'O status deve ser um valor válido: DISPONIVEL ou ESGOTADO ',
+  }) 
   @IsNotEmpty({ message: 'Digite o status do estoque!' })
   statusEstoque: StatusEstoque;
 
