@@ -106,7 +106,7 @@ export class ProdutosController {
   @ApiOperation({
     summary: 'Atualiza dados do produto',
     description:
-      'Disponível apenas para Admin. Atualização da imagem é opcional.',
+      'Disponível apenas para Admin. Quantidade de produtos é somada com o valor passado. Atualização da imagem é opcional.',
   })
   @ApiParam({ name: 'id', description: 'Id do produto' })
   @ApiResponse({status: 200,description: 'Produto atualizado com sucesso.',type: UpdateProductsDto,})
