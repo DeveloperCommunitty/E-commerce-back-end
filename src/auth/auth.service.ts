@@ -17,8 +17,8 @@ export class AuthService {
     const user = await this.userService.findOne(email);
 
     const payload = {
-      userEmail: user.user.email,
-      userName: user.user.id,
+      id: user.user.id,
+      email: user.user.email,
       role: user.user.role,
     };
 
