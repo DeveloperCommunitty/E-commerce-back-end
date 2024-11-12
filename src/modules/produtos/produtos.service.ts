@@ -118,9 +118,9 @@ export class ProdutosService {
       );
 
     return {
-        data: productsAll,
-        totalPages: Math.ceil(totalProducts / pageSize),
-        currentPage: page,
+      data: productsAll,
+      totalPages: Math.ceil(totalProducts / pageSize),
+      currentPage: page,
     };
   }
 
@@ -231,6 +231,54 @@ export class ProdutosService {
       throw new HttpException(`Produto inexistente`, HttpStatus.NOT_FOUND);
 
     return product;
+  }
+
+  async searchProducts(name: string, page: number = 1) {
+    const pageSize = 10;
+    page = Math.max(page, 1);
+    const offset = (page - 1) * pageSize;
+
+    if (!name || name.trim() === '') {
+      throw new HttpException(
+        'A consulta de pesquisa não pode estar vazia',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const suggestions = await this.prisma.products.findMany({
+      where: {
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        description: true,
+        sku: true,
+        stock: true,
+        imagemUrl: true,
+      },
+      skip: offset,
+      take: pageSize,
+    });
+
+    const totalProducts = await this.prisma.products.count();
+
+    if (suggestions.length === 0) {
+      throw new HttpException(
+        'Nenhum produto encontrado',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      data: suggestions,
+      totalPages: Math.ceil(totalProducts / pageSize),
+      currentPage: page,
+    };
   }
 
   async destroy(id: string) {
