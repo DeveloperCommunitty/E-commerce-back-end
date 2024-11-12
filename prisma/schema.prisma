@@ -29,6 +29,12 @@ enum StatusEstoque {
   ESGOTADO
 }
 
+enum ProductCategories {
+  RECOMENDADOS
+  MAIS_VENDIDOS
+  MAIS_PROCURADOS
+}
+
 model User {
   id        String     @id @default(uuid())
   email     String     @unique
@@ -95,21 +101,22 @@ model Carts {
 }
 
 model Products {
-  id            String        @id @default(uuid())
+  id            String            @id @default(uuid())
   name          String
   description   String
   price         Float
   stock         Int
-  sku           String        @unique
-  statusEstoque StatusEstoque @default(DISPONIVEL) @map("status_estoque")
-  imagemUrl     String        @map("imagem_id")
-  publicId      String        @map("public_id")
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
+  sku           String            @unique
+  category      ProductCategories @default(RECOMENDADOS)
+  statusEstoque StatusEstoque     @default(DISPONIVEL) @map("status_estoque")
+  imagemUrl     String            @map("imagem_id")
+  publicId      String            @map("public_id")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
   CartItems     CartItems[]
-  isLocked      Boolean       @default(false) @map("is_locked")
-  lockedAt      DateTime?     @map("locked_at")
-  lockDuration  Int?          @map("lock_duration")
+  isLocked      Boolean           @default(false) @map("is_locked")
+  lockedAt      DateTime?         @map("locked_at")
+  lockDuration  Int?              @map("lock_duration")
 
   @@map("products")
 }
