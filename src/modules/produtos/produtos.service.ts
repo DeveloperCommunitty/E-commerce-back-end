@@ -22,16 +22,7 @@ export class ProdutosService {
     @Body() body: ProductsDto,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    const { name, description, price, stock, sku } = body;
-
-    const nameUnique = await this.prisma.products.findFirst({
-      where: {
-        name: name,
-      },
-    });
-
-    if (nameUnique)
-      throw new HttpException(`O produto já existe`, HttpStatus.CONFLICT);
+    const { name, description, price, stock, sku, category } = body;
 
     const skuUnique = await this.prisma.products.findFirst({
       where: {
@@ -46,7 +37,7 @@ export class ProdutosService {
       );
 
     let imageResults: any[];
-    if (files && files.length > 0 && !nameUnique && !skuUnique) {
+    if (files && files.length > 0 && !skuUnique) {
       imageResults = await Promise.all(
         files.map((file) => this.cloudinary.uploadImage(file)),
       );
@@ -61,6 +52,7 @@ export class ProdutosService {
       data: {
         name,
         description,
+        category,
         price,
         stock,
         sku,
@@ -75,6 +67,7 @@ export class ProdutosService {
         id: true,
         name: true,
         price: true,
+        category: true,
         description: true,
         sku: true,
         stock: true,
@@ -102,6 +95,7 @@ export class ProdutosService {
         id: true,
         name: true,
         price: true,
+        category: true,
         description: true,
         sku: true,
         stock: true,
@@ -118,9 +112,9 @@ export class ProdutosService {
       );
 
     return {
-        data: productsAll,
-        totalPages: Math.ceil(totalProducts / pageSize),
-        currentPage: page,
+      data: productsAll,
+      totalPages: Math.ceil(totalProducts / pageSize),
+      currentPage: page,
     };
   }
 
@@ -129,7 +123,8 @@ export class ProdutosService {
     body: UpdateProductsDto,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    const { name, description, price, stock, sku, statusEstoque } = body;
+    const { name, description, price, stock, sku, statusEstoque, category } =
+      body;
 
     const existsProduct = await this.prisma.products.findUnique({
       where: { id },
@@ -180,6 +175,7 @@ export class ProdutosService {
           name,
           description,
           price,
+          category,
           stock: { increment: stock },
           statusEstoque,
           sku,
@@ -207,10 +203,25 @@ export class ProdutosService {
         data: {
           name,
           description,
+          category,
           price,
           stock: { increment: stock },
           statusEstoque,
           sku,
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          price: true,
+          stock: true,
+          sku: true,
+          category: true,
+          statusEstoque: true,
+          imagemUrl: true,
+          isLocked: true,
+          lockedAt: true,
+          lockDuration: true,
         },
       });
 
@@ -225,12 +236,75 @@ export class ProdutosService {
   }
 
   async findOne(id: string) {
-    const product = await this.prisma.products.findUnique({ where: { id } });
+    const product = await this.prisma.products.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        category: true,
+        description: true,
+        sku: true,
+        stock: true,
+        imagemUrl: true,
+      },
+    });
 
     if (!product)
       throw new HttpException(`Produto inexistente`, HttpStatus.NOT_FOUND);
 
     return product;
+  }
+
+  async searchProducts(name: string, page: number = 1) {
+    const pageSize = 10;
+    page = Math.max(page, 1);
+    const offset = (page - 1) * pageSize;
+
+    if (!name || name.trim() === '') {
+      throw new HttpException(
+        'A consulta de pesquisa não pode estar vazia',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const searchProduct = await this.prisma.products.findMany({
+      where: {
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        category: true,
+        description: true,
+        sku: true,
+        stock: true,
+        imagemUrl: true,
+      },
+      skip: offset,
+      take: pageSize,
+    });
+
+    const totalProducts = await this.prisma.products.count();
+
+    if (searchProduct.length === 0) {
+      throw new HttpException(
+        'Nenhum produto encontrado',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      data: searchProduct,
+      totalPages: Math.ceil(totalProducts / pageSize),
+      currentPage: page,
+    };
   }
 
   async destroy(id: string) {

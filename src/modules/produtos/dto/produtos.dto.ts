@@ -2,6 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, Length } from 'class-validator';
 
+export enum ProductCategories {
+  RECOMENDADOS = 'RECOMENDADOS',
+  MAIS_VENDIDOS = 'MAIS_VENDIDOS',
+  MAIS_PROCURADOS = 'MAIS_PROCURADOS',
+}
+
 export class ProductsDto {
   @ApiProperty({
     type: 'array',
@@ -44,4 +50,10 @@ export class ProductsDto {
     description: 'Código de indetificaçao único',
   })
   sku: string;
+  @ApiProperty({
+    example: 'RECOMENDADOS',
+    description: 'Selecione a categoria do produto',
+    enum: ProductCategories,
+  })
+  category: ProductCategories;
 }

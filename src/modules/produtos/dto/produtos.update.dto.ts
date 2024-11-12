@@ -7,6 +7,12 @@ export enum StatusEstoque {
   ESGOTADO = 'ESGOTADO',
 }
 
+export enum ProductCategories {
+  RECOMENDADOS = 'RECOMENDADOS',
+  MAIS_VENDIDOS = 'MAIS_VENDIDOS',
+  MAIS_PROCURADOS = 'MAIS_PROCURADOS',
+}
+
 export class UpdateProductsDto {
   @ApiProperty({
     type: 'array',
@@ -44,9 +50,8 @@ export class UpdateProductsDto {
     enum: StatusEstoque,
   })
   @IsEnum(StatusEstoque, {
-    message:
-      'O status deve ser um valor válido: DISPONIVEL ou ESGOTADO ',
-  }) 
+    message: 'O status deve ser um valor válido: DISPONIVEL ou ESGOTADO ',
+  })
   @IsNotEmpty({ message: 'Digite o status do estoque!' })
   statusEstoque: StatusEstoque;
 
@@ -75,4 +80,12 @@ export class UpdateProductsDto {
     required: true,
   })
   sku: string;
+
+  @ApiProperty({
+    example: 'RECOMENDADOS',
+    description: 'Selecione a categoria do produto',
+    enum: ProductCategories,
+    required: false,
+  })
+  category: ProductCategories;
 }
