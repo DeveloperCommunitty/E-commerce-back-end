@@ -1,43 +1,34 @@
-import { PartialType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateUsuarioDto } from './createUsuario.dto';
 
 export enum Role {
   USER = 'USER',
   ADMIN = 'ADMIN',
 }
-export class UpdateUsuarioDto extends PartialType(CreateUsuarioDto) {
+export class UpdateUsuarioDto {
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'Imagem do Avatar',
+    example: 'avatar.png',
+    required: false,
+  })
+  file?: Express.Multer.File;
+
   @ApiProperty({
     example: 'Nina',
+    required: false,
   })
   name?: string;
 
   @ApiProperty({
     example: 'cliente@example.com',
+    required: false,
   })
   email?: string;
 
   @ApiProperty({
     example: 'cliente123',
+    required: false,
   })
   password?: string;
-
-  @ApiProperty({
-    example:
-      'https://res.cloudinary.com/dtk98bty4/image/upload/v1728862716/produtos/wwoedlsoaizy3leknzqg.jpg',
-    readOnly: true,
-  })
-  avatar?: string;
-
-  @ApiProperty({
-    example: 'wwoedlsoaizy3leknzqg.jpg',
-    readOnly: true,
-  })
-  avatarId?: string;
-
-  @ApiProperty({
-    example: 'USER',
-    readOnly: true,
-  })
-  role?: Role;
 }

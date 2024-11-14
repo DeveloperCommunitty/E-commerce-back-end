@@ -13,6 +13,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiOperation,
   ApiQuery,
   ApiResponse,
@@ -90,6 +91,7 @@ export class UsuarioController {
   @ApiResponse({ status: 200, description: `Usuário atualizado com sucesso` })
   @ApiResponse({ status: 404, description: `Usuário inexistente` })
   @ApiResponse({ status: 500, description: 'Erro interno do servidor.' })
+  @ApiConsumes('multipart/form-data')
   @ApiBearerAuth('access_token')
   @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
   update(

@@ -114,52 +114,48 @@ export class UsuarioService {
     };
   }
 
-  async update(id: string, body: UpdateUsuarioDto, file: Express.Multer.File) {
+  async update(id: string, body: UpdateUsuarioDto, file?: Express.Multer.File) {
     const userCheck = await this.prisma.user.findUnique({
       where: { id },
     });
-    if (!userCheck)
+    if (!userCheck) {
       throw new HttpException(`Usuário inexistente`, HttpStatus.NOT_FOUND);
+    }
 
-    const { name, password } = body;
-    let avatar_id = null;
-    let avatar_url = null;
+    const { name, password, email } = body;
+    const updateData: any = {};
 
-    const ramdomSalt = randomInt(10, 16);
-    const hash = await bcrypt.hash(password, ramdomSalt);
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
 
-    if (file && userCheck) {
+    if (password) {
+      const ramdomSalt = randomInt(10, 16);
+      updateData.password = await bcrypt.hash(password, ramdomSalt);
+    }
+
+    if (file) {
+      if (userCheck.avatarId) {
+        await cloudinary.uploader.destroy(userCheck.avatarId);
+      }
+
       const result = await cloudinary.uploader.upload(file.path, {
         folder: 'avatar',
       });
 
-      avatar_id = result.public_id;
-      avatar_url = result.secure_url;
+      updateData.avatar = result.secure_url;
+      updateData.avatarId = result.public_id;
     }
 
-    if (file && userCheck.avatarId)
-      await cloudinary.uploader.destroy(userCheck.avatarId);
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: updateData,
+    });
 
-    if (file) {
-      const user = await this.prisma.user.update({
-        where: { id },
-        data: {
-          name,
-          password: hash,
-          avatar: avatar_url,
-          avatarId: avatar_id,
-        },
-      });
-
-      if (user) {
-        throw new HttpException(
-          `Usuário atualizado com sucesso`,
-          HttpStatus.OK,
-        );
-      }
-
-      return user;
+    if (updatedUser) {
+      throw new HttpException(`Usuário atualizado com sucesso`, HttpStatus.OK);
     }
+
+    return updatedUser;
   }
 
   async remove(id: string) {
