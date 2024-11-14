@@ -291,7 +291,14 @@ export class ProdutosService {
       take: pageSize,
     });
 
-    const totalProducts = await this.prisma.products.count();
+    const totalProducts = await this.prisma.products.count({
+      where: {
+        name: {
+          startsWith: name,
+          mode: 'insensitive',
+        },
+      },
+    });
 
     if (searchProduct.length === 0) {
       throw new HttpException(
