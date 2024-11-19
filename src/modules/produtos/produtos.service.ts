@@ -5,11 +5,11 @@ import {
   Injectable,
   UploadedFiles,
 } from '@nestjs/common';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PrismaService } from 'src/database/PrismaService';
 import { ProductsDto } from './dto/produtos.dto';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { UpdateProductsDto } from './dto/produtos.update.dto';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class ProdutosService {
@@ -259,21 +259,14 @@ export class ProdutosService {
   }
 
   async searchProducts(name: string, page: number = 1) {
-    const pageSize = 10;
+    const pageSize = 12;
     page = Math.max(page, 1);
     const offset = (page - 1) * pageSize;
-
-    if (!name || name.trim() === '') {
-      throw new HttpException(
-        'A consulta de pesquisa não pode estar vazia',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
 
     const searchProduct = await this.prisma.products.findMany({
       where: {
         name: {
-          contains: name,
+          startsWith: name.trim(),
           mode: 'insensitive',
         },
       },
@@ -294,7 +287,7 @@ export class ProdutosService {
     const totalProducts = await this.prisma.products.count({
       where: {
         name: {
-          startsWith: name,
+          startsWith: name.trim(),
           mode: 'insensitive',
         },
       },
@@ -311,6 +304,41 @@ export class ProdutosService {
       data: searchProduct,
       totalPages: Math.ceil(totalProducts / pageSize),
       currentPage: page,
+    };
+  }
+
+  async filterByPrice(minPrice?: number, maxPrice?: number) {
+    const filters = {
+      price: {
+        gte: minPrice || 0,
+        lte: maxPrice || Number.MAX_SAFE_INTEGER,
+      },
+    };
+
+    const products = await this.prisma.products.findMany({
+      where: filters,
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        category: true,
+        description: true,
+        sku: true,
+        stock: true,
+        imagemUrl: true,
+      },
+    });
+
+    if (products.length === 0) {
+      throw new HttpException(
+        `Nenhum produto encontrado na faixa de preço ${minPrice || 0} - ${maxPrice || 'infinito'}`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      data: products,
+      total: products.length,
     };
   }
 

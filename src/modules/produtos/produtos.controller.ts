@@ -207,4 +207,24 @@ export class ProdutosController {
   destroy(@Param('id') id: string) {
     return this.productsService.destroy(id);
   }
+
+  @Public()
+  @Get('filter/price')
+  @ApiQuery({
+    name: 'minPrice',
+    required: false,
+    description: 'Preço mínimo dos produtos',
+  })
+  @ApiQuery({
+    name: 'maxPrice',
+    required: false,
+    description: 'Preço máximo dos produtos',
+  })
+  @ApiResponse({ status: 200, description: 'Produto filtrado com sucesso.' })
+  async filterByPrice(
+    @Query('minPrice') minPrice?: number,
+    @Query('maxPrice') maxPrice?: number,
+  ) {
+    return this.productsService.filterByPrice(minPrice, maxPrice);
+  }
 }
