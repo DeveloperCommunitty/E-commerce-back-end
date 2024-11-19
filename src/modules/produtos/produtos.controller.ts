@@ -90,12 +90,6 @@ export class ProdutosController {
     description: 'Número da página (opcional, padrão: 1)',
     type: Number,
   })
-  @ApiQuery({
-    name: 'pageSize',
-    required: false,
-    description: 'Quantidade de itens por página (opcional, padrão: 10)',
-    type: Number,
-  })
   @Get()
   @CheckPolicies((ability: AppAbility) => ability.can(Action.User, 'all'))
   findAll(@Query() paginationDto: PaginationDto) {
@@ -124,12 +118,6 @@ export class ProdutosController {
     name: 'page',
     required: false,
     description: 'Número da página (opcional, padrão: 1)',
-    type: Number,
-  })
-  @ApiQuery({
-    name: 'pageSize',
-    required: false,
-    description: 'Quantidade de itens por página (opcional, padrão: 10)',
     type: Number,
   })
   @ApiResponse({ status: 200, description: 'Produto encontrado com sucesso.' })
@@ -220,11 +208,19 @@ export class ProdutosController {
     required: false,
     description: 'Preço máximo dos produtos',
   })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Número da página (opcional, padrão: 1)',
+    type: Number,
+  })
   @ApiResponse({ status: 200, description: 'Produto filtrado com sucesso.' })
   async filterByPrice(
     @Query('minPrice') minPrice?: number,
     @Query('maxPrice') maxPrice?: number,
+    @Query('page') page?: string,
   ) {
-    return this.productsService.filterByPrice(minPrice, maxPrice);
+    const pageNumber = page ? parseInt(page, 10) : 1;
+    return this.productsService.filterByPrice(minPrice, maxPrice, pageNumber);
   }
 }

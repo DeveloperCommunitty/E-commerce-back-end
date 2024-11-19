@@ -307,7 +307,11 @@ export class ProdutosService {
     };
   }
 
-  async filterByPrice(minPrice?: number, maxPrice?: number) {
+  async filterByPrice(minPrice?: number, maxPrice?: number, page: number = 1) {
+    const pageSize = 12;
+    page = Math.max(page, 1);
+    const offset = (page - 1) * pageSize;
+
     const filters = {
       price: {
         gte: minPrice || 0,
@@ -327,6 +331,12 @@ export class ProdutosService {
         stock: true,
         imagemUrl: true,
       },
+      skip: offset,
+      take: pageSize,
+    });
+
+    const totalProducts = await this.prisma.products.count({
+      where: filters,
     });
 
     if (products.length === 0) {
@@ -338,7 +348,9 @@ export class ProdutosService {
 
     return {
       data: products,
-      total: products.length,
+      total: totalProducts,
+      totalPages: Math.ceil(totalProducts / pageSize),
+      currentPage: page,
     };
   }
 
